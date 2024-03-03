@@ -1,8 +1,8 @@
-using Terraria.ModLoader;
+﻿using Terraria.ModLoader;
 
 namespace RealisticSky
 {
-	public class RealisticSky : Mod
-	{
-	}
+    public class RealisticSky : Mod
+    {
+    }
 }
