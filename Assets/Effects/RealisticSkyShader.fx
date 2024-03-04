@@ -37,7 +37,7 @@ float CalculateAtmosphereDensityAtPoint(float3 p)
     float amountOfSpaceTakenByAtmosphere = atmosphereRadius - planetRadius * 0.7;
     float atmosphereInterpolant = smoothstep(0, amountOfSpaceTakenByAtmosphere, distanceFromPlanetSurface);
     
-    return exp(-atmosphereInterpolant) * (1 - atmosphereInterpolant);
+    return exp(-atmosphereInterpolant * 1.5) * (1 - atmosphereInterpolant);
 }
 
 // Optical depth in this context basically is a measure of how much air is present along a given ray.
