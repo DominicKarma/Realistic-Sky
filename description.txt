@@ -1,1 +1,1 @@
-Realistic Sky is a pretty cool mod, it does...this. Modify this file with a description of your mod.
+Adds a cool effect to the base background sky so that the atmosphere and its light scattering is more noticeably realistic.
