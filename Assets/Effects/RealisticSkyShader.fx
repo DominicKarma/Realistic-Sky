@@ -106,7 +106,7 @@ float4 CalculateScatteredLight(float3 rayOrigin, float3 rayDirection)
         inScatterSamplePosition += rayDirection * inScatterStep;
     }
     
-    // Calculate the rayleigh scattering phase value for the given ray between it and the sun.
+    // Calculate the Rayleigh scattering phase value for the given ray between it and the sun.
     float cosTheta = dot(normalize(sunPosition - rayOrigin), rayDirection);
     float rayleighPhase = (cosTheta * cosTheta + 1.0) * 0.0596831; // This constant is 3/(16pi).
     
@@ -116,14 +116,17 @@ float4 CalculateScatteredLight(float3 rayOrigin, float3 rayDirection)
 
 float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD0, float4 position : SV_Position) : COLOR0
 {
+    // Account for the pesky gravity potions...
     if (invertedGravity)
         position.y = screenHeight - position.y;
     
-    //return exp(distance(position.xy, sunPosition.xy) * -0.03);
-    float distanceFromPlanet = distance(position.xy, planetPosition.xy);
+    // Calculate how much scattered light will end up in the current fragment.
     float4 atmosphereLight = CalculateScatteredLight(float3(position.xy, -atmosphereRadius - 5), float3(0, 0, 1));
+    
+    // Apply exponential tone-mapping. This neutralizes the overall colors and ensures that it takes more effort for super bright values to appear.
     atmosphereLight.rgb = 1 - exp(-atmosphereLight.rgb);
     
+    // Combine the scattered light with the sample color, allowing for dynamic colorations and opacities to the final result.
     return atmosphereLight * sampleColor;
 }
 
