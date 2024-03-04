@@ -108,7 +108,7 @@ float4 CalculateScatteredLight(float3 rayOrigin, float3 rayDirection)
     
     // Calculate the rayleigh scattering phase value for the given ray between it and the sun.
     float cosTheta = dot(normalize(sunPosition - rayOrigin), rayDirection);
-    float rayleighPhase = (cosTheta * cosTheta + 1.0) * 0.0596831; // This constant is 3/16pi.
+    float rayleighPhase = (cosTheta * cosTheta + 1.0) * 0.0596831; // This constant is 3/(16pi).
     
     // Combine the light with the scattering coefficients.
     return float4(light * scatteringCoefficients * rayleighPhase * inScatterStep * 15.1, 0);
