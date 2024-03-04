@@ -1,1 +1,10 @@
+Configs: {
+	RealisticSkyConfig: {
+		DisplayName: Realistic Sky Config
 
+		PerformanceMode: {
+			Label: Performance Mode
+			Tooltip: Whether sky quality should be sacrificed in favor of performance.
+		}
+	}
+}

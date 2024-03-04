@@ -2,6 +2,7 @@ sampler baseTexture : register(s0);
 sampler planetTexture : register(s1);
 
 bool invertedGravity;
+bool performanceMode;
 float globalTime;
 float atmosphereRadius;
 float planetRadius;
@@ -59,8 +60,8 @@ float CalculateOpticalDepth(float3 rayOrigin, float3 rayDirection, float rayLeng
 // Credit to Sebastian Lague's atmospheric rendering shader for much of this (as well as his video on the subject for explaining the concepts excellently).
 float4 CalculateScatteredLight(float3 rayOrigin, float3 rayDirection)
 {
-    float inScatterPoints = 10;
-    float sunIntersectionPoints = 4;
+    float inScatterPoints = performanceMode ? 5 : 11;
+    float sunIntersectionPoints = performanceMode ? 4 : 5;
     float2 intersectionDistances = GetRaySphereIntersectionOffsets(rayOrigin, rayDirection, planetPosition, atmosphereRadius);
     float3 scatteringCoefficients = pow(400 / rgbLightWavelengths, 4);
     
