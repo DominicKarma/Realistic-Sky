@@ -85,9 +85,9 @@ float4 CalculateScatteredLight(float3 rayOrigin, float3 rayDirection)
         float3 directionToSun = normalize(sunPosition - inScatterSamplePosition);
         
         // Perform a ray intersection from the sample position towards the sun.
-        // This does not need a safety "is there any intersection check?" at all since by definition the sample position is already in the sphere, since it's an intersection
+        // This does not need a safety "is there any intersection at all?" check since by definition the sample position is already in the sphere, since it's an intersection
         // of a line in said sphere.
-        float2 sunRayLengthDistances = GetRaySphereIntersectionOffsets(inScatterSamplePosition, directionToSun, planetPosition, atmosphereRadius);        
+        float2 sunRayLengthDistances = GetRaySphereIntersectionOffsets(inScatterSamplePosition, directionToSun, planetPosition, atmosphereRadius);
         float sunIntersectionRayLength = sunRayLengthDistances.y - sunRayLengthDistances.x;
         
         // Calculate the optical depth along the ray from the sample point to the sun.
