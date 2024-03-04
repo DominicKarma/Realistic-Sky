@@ -106,8 +106,12 @@ float4 CalculateScatteredLight(float3 rayOrigin, float3 rayDirection)
         inScatterSamplePosition += rayDirection * inScatterStep;
     }
     
+    // Calculate the rayleigh scattering phase value for the given ray between it and the sun.
+    float cosTheta = dot(normalize(sunPosition - rayOrigin), rayDirection);
+    float rayleighPhase = (cosTheta * cosTheta + 1.0) * 0.0596831; // This constant is 3/16pi.
+    
     // Combine the light with the scattering coefficients.
-    return float4(light * scatteringCoefficients * inScatterStep * 1.2, 0);
+    return float4(light * scatteringCoefficients * rayleighPhase * inScatterStep * 15.1, 0);
 }
 
 float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD0, float4 position : SV_Position) : COLOR0
@@ -115,8 +119,9 @@ float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD
     if (invertedGravity)
         position.y = screenHeight - position.y;
     
+    //return exp(distance(position.xy, sunPosition.xy) * -0.03);
     float distanceFromPlanet = distance(position.xy, planetPosition.xy);
-    float4 atmosphereLight = CalculateScatteredLight(float3(position.xy, -atmosphereRadius - 50000), float3(0, 0, 1));
+    float4 atmosphereLight = CalculateScatteredLight(float3(position.xy, -atmosphereRadius - 5), float3(0, 0, 1));
     atmosphereLight.rgb = 1 - exp(-atmosphereLight.rgb);
     
     return atmosphereLight * sampleColor;

@@ -50,13 +50,13 @@ namespace RealisticSky
 
             // Prepare for sky drawing.
             Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.BackgroundViewMatrix.ZoomMatrix);
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.BackgroundViewMatrix.TransformationMatrix);
 
             DrawSky();
 
             // Return to standard drawing.
             Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.UIScaleMatrix);
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, Main.BackgroundViewMatrix.TransformationMatrix);
         }
 
         public static void DrawSky()
@@ -64,22 +64,24 @@ namespace RealisticSky
             // Prepare the sky shader.
             Vector2 screenSize = new(Main.instance.GraphicsDevice.Viewport.Width, Main.instance.GraphicsDevice.Viewport.Height);
 
-            float spaceInterpolant = Utils.GetLerpValue(3200f, 300f, Main.screenPosition.Y, true);
-            float surfaceInterpolant = Utils.GetLerpValue(3000f, 5000f, Main.screenPosition.Y, true);
-            float radius = MathHelper.Lerp(40000f, 400f, spaceInterpolant);
+            float worldYInterpolant = Main.LocalPlayer.Center.Y / Main.maxTilesY / 16f;
+            float spaceInterpolant = Utils.GetLerpValue(0.074f, 0.01708f, worldYInterpolant, true);
+            float surfaceInterpolant = Utils.GetLerpValue(0.071f, 0.11f, worldYInterpolant, true);
+            float radius = MathHelper.Lerp(20000f, 3700f, spaceInterpolant);
             float yOffset = spaceInterpolant * 600f + 250f;
             float baseSkyBrightness = (Main.ColorOfTheSkies.R + Main.ColorOfTheSkies.G + Main.ColorOfTheSkies.B) / 765f;
             float specialSkyOpacity = Utils.GetLerpValue(0.08f, 0.2f, baseSkyBrightness + spaceInterpolant * 0.287f, true) * MathHelper.Lerp(1f, 0.5f, surfaceInterpolant);
 
             Effect shader = GameShaders.Misc[ShaderKey].Shader;
+            Vector2 sunPosition = RealisticSkyManagerScene.SunPosition;
             shader.Parameters["globalTime"]?.SetValue(Main.GlobalTimeWrappedHourly);
             shader.Parameters["atmosphereRadius"]?.SetValue(radius);
             shader.Parameters["planetRadius"]?.SetValue(radius * 0.8f);
             shader.Parameters["invertedGravity"]?.SetValue(Main.LocalPlayer.gravDir == -1f);
             shader.Parameters["screenHeight"]?.SetValue(screenSize.Y);
-            shader.Parameters["sunPosition"]?.SetValue(new Vector3(screenSize.X * 0.5f, 0f, 100f));
+            shader.Parameters["sunPosition"]?.SetValue(new Vector3(sunPosition, -100f));
             shader.Parameters["planetPosition"]?.SetValue(new Vector2(screenSize.X * 0.5f, radius + yOffset));
-            shader.Parameters["rgbLightWavelengths"]?.SetValue(new Vector3(650f, 530f, 430f));
+            shader.Parameters["rgbLightWavelengths"]?.SetValue(new Vector3(750f, 530f, 430f));
             shader.CurrentTechnique.Passes[0].Apply();
 
             // Draw the sky.
