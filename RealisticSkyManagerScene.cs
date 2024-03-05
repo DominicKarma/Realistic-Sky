@@ -4,6 +4,7 @@ using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using Terraria;
 using Terraria.Graphics.Effects;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace RealisticSky
@@ -62,7 +63,22 @@ namespace RealisticSky
             cursor.EmitDelegate<Action<Vector2>>(moonPosition => MoonPosition = moonPosition);
         }
 
-        public override bool IsSceneEffectActive(Player player) => true;
+        public override bool IsSceneEffectActive(Player player)
+        {
+            // Make the effect not appear during boss fights.
+            for (int i = 0; i < Main.maxNPCs; i++)
+            {
+                if (Main.npc[i] is null || !Main.npc[i].active)
+                    continue;
+
+                NPC npc = Main.npc[i];
+                bool isEaterOfWorlds = npc.type == NPCID.EaterofWorldsBody || npc.type == NPCID.EaterofWorldsHead || npc.type == NPCID.EaterofWorldsTail;
+                if (npc.boss || isEaterOfWorlds)
+                    return false;
+            }
+
+            return true;
+        }
 
         public override SceneEffectPriority Priority => SceneEffectPriority.None;
 
