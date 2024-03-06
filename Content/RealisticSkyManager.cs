@@ -27,6 +27,22 @@ namespace RealisticSky.Content
         public const int DuskDuration = 6700;
 
         /// <summary>
+        /// Where the space interpolant begins as a 0-1 ratio.
+        /// </summary>
+        /// <remarks>
+        /// In this context, "ratio" refers to the world height. A value of 0.05 would, for example, correspond to the upper 5% of the world's height.
+        /// </remarks>
+        public const float SpaceYRatioStart = 0.074f;
+
+        /// <summary>
+        /// Where the space interpolant is considered at its maximum as a 0-1 ratio.
+        /// </summary>
+        /// <remarks>
+        /// In this context, "ratio" refers to the world height. A value of 0.05 would, for example, correspond to the upper 5% of the world's height.
+        /// </remarks>
+        public const float SpaceYRatioEnd = 0.024f;
+
+        /// <summary>
         /// The intensity of light based on dawn or dusk as a 0-1 ratio.
         /// </summary>
         public static float SunlightIntensityByTime
@@ -63,7 +79,7 @@ namespace RealisticSky.Content
 
             // Calculate various useful interpolants in advance.
             float worldYInterpolant = Main.LocalPlayer.Center.Y / Main.maxTilesY / 16f;
-            float spaceInterpolant = MathHelper.SmoothStep(0f, 1f, Utils.GetLerpValue(0.074f, 0.024f, worldYInterpolant, true));
+            float spaceInterpolant = MathHelper.SmoothStep(0f, 1f, Utils.GetLerpValue(SpaceYRatioStart, SpaceYRatioEnd, worldYInterpolant, true));
 
             // Draw stars.
             Vector2 transformedSunPosition = Vector2.Transform(SunPositionSaver.SunPosition, Matrix.Invert(backgroundMatrix));
