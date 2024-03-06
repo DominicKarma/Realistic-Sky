@@ -51,26 +51,6 @@ namespace RealisticSky.Content
             }
         }
 
-        public override void Deactivate(params object[] args)
-        {
-            skyActive = false;
-        }
-
-        public override void Reset()
-        {
-            skyActive = false;
-        }
-
-        public override bool IsActive()
-        {
-            return skyActive || Opacity > 0f;
-        }
-
-        public override void Activate(Vector2 position, params object[] args)
-        {
-            skyActive = true;
-        }
-
         public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
             if (maxDepth < float.MaxValue || minDepth >= float.MaxValue)
@@ -86,7 +66,8 @@ namespace RealisticSky.Content
             float spaceInterpolant = MathHelper.SmoothStep(0f, 1f, Utils.GetLerpValue(0.074f, 0.024f, worldYInterpolant, true));
 
             // Draw stars.
-            StarsRenderer.Render(spaceInterpolant, SunlightIntensityByTime, Opacity, Vector2.Transform(SunPositionSaver.SunPosition, Matrix.Invert(backgroundMatrix)));
+            Vector2 transformedSunPosition = Vector2.Transform(SunPositionSaver.SunPosition, Matrix.Invert(backgroundMatrix));
+            StarsRenderer.Render(spaceInterpolant, SunlightIntensityByTime, Opacity, transformedSunPosition);
 
             // Prepare for atmosphere drawing by allowing shaders.
             Main.spriteBatch.End();
@@ -113,9 +94,22 @@ namespace RealisticSky.Content
             if (Main.gameMenu)
                 skyActive = false;
 
+            // Increase or decrease the opacity of this sky based on whether it's active or not, stopping at 0-1 bounds.
             Opacity = MathHelper.Clamp(Opacity + skyActive.ToDirectionInt() * 0.1f, 0f, 1f);
         }
 
+        #region Boilerplate
+        public override void Deactivate(params object[] args) => skyActive = false;
+
+        public override void Reset() => skyActive = false;
+
+        public override bool IsActive() => skyActive || Opacity > 0f;
+
+        public override void Activate(Vector2 position, params object[] args) => skyActive = true;
+
+        // Ensure that cloud opacities are not disturbed by this sky effect.
         public override float GetCloudAlpha() => 1f;
+
+        #endregion Boilerplate
     }
 }
