@@ -8,10 +8,11 @@ namespace RealisticSky.Content
 {
     public class SunRenderer : ModSystem
     {
-        public static void Render(float spaceInterpolant, float sunriseAndSetInterpolant)
+        public static void Render(float sunriseAndSetInterpolant)
         {
             // Make things stronger when in space, and weaker during sunrises and sunsets.
             float bloomOpacity = MathHelper.Lerp(1f, 0.5f, sunriseAndSetInterpolant);
+            float spaceInterpolant = RealisticSkyManager.SpaceHeightInterpolant;
             float scaleFactor = (spaceInterpolant * 0.21f + 1f) * bloomOpacity;
             float pureWhiteInterpolant = MathF.Pow(spaceInterpolant, 2f);
             Vector2 sunPosition = SunPositionSaver.SunPosition;

@@ -1,18 +1,137 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
+using Terraria.GameContent;
+using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
+using SpecialStar = RealisticSky.Common.DataStructures.Star;
 
 namespace RealisticSky.Content
 {
     public class StarsRenderer : ModSystem
     {
-        public static void Render(float spaceInterpolant, float sunriseAndSetInterpolant, float opacity, Vector2 transformedSunPosition)
+        /// <summary>
+        /// The set of all stars in the sky.
+        /// </summary>
+        internal static SpecialStar[] Stars;
+
+        /// <summary>
+        /// The vertex buffer that contains all star information.
+        /// </summary>
+        internal static VertexBuffer StarVertexBuffer;
+
+        /// <summary>
+        /// The index buffer that contains all vertex pointers for <see cref="StarVertexBuffer"/>.
+        /// </summary>
+        internal static IndexBuffer StarIndexBuffer;
+
+        /// <summary>
+        /// The basic shader responsible for rendering the contents of the <see cref="StarVertexBuffer"/>.
+        /// </summary>
+        internal static BasicEffect StarShader;
+
+        /// <summary>
+        /// The identifier key for the sky's star shader.
+        /// </summary>
+        public const string StarShaderKey = "RealisticSky:StarShader";
+
+        public override void OnModLoad()
+        {
+            // Initialize the star shader.
+            GameShaders.Misc[StarShaderKey] = new MiscShaderData(new(ModContent.Request<Effect>("RealisticSky/Assets/Effects/StarPrimitiveShader", AssetRequestMode.ImmediateLoad).Value), "AutoloadPass");
+
+            // Generate stars.
+            GenerateStars(16000);
+        }
+
+        internal static void GenerateStars(int starCount)
+        {
+            Stars = new SpecialStar[starCount];
+            for (int i = 0; i < Stars.Length; i++)
+            {
+                // Calculate the position of the star on the screen. The Y position is biased a bit towards the top by making the random interpolant generally favor being closer to 0.
+                float xPositionRatio = Main.rand.NextFloat(-0.05f, 1.05f);
+                float yPositionRatio = MathHelper.Lerp(-0.05f, 1f, MathF.Pow(Main.rand.NextFloat(), 1.5f));
+
+                // Calculate the star color.
+                Color color = Color.Lerp(Color.Wheat, Color.LightGoldenrodYellow, Main.rand.NextFloat());
+                if (Main.rand.NextBool(10))
+                    color = Color.Lerp(color, Color.Cyan, Main.rand.NextFloat(0.67f));
+                color.A = 0;
+
+                // Calculate the star's radius. These are harshly biased towards being tiny.
+                float radius = MathHelper.Lerp(2f, 4.3f, MathF.Pow(Main.rand.NextFloat(), 9f));
+                if (Main.rand.NextBool(30))
+                    radius *= 1.3f;
+                if (Main.rand.NextBool(50))
+                    radius *= 1.3f;
+                if (Main.rand.NextBool(50))
+                    radius *= 1.45f;
+
+                Stars[i] = new(xPositionRatio, yPositionRatio, color * MathF.Pow(radius / 6f, 1.5f), radius, Main.rand.NextFloat(MathHelper.TwoPi));
+            }
+            Main.QueueMainThreadAction(RegenerateBuffers);
+        }
+
+        internal static void RegenerateBuffers()
+        {
+            RegenerateVertexBuffer();
+            RegenerateIndexBuffer();
+        }
+
+        internal static void RegenerateVertexBuffer()
+        {
+            // Initialize the star buffer if necessary.
+            StarVertexBuffer?.Dispose();
+            StarVertexBuffer = new VertexBuffer(Main.instance.GraphicsDevice, VertexPositionColorTexture.VertexDeclaration, Stars.Length * 4, BufferUsage.WriteOnly);
+
+            // Generate vertex data.
+            VertexPositionColorTexture[] vertices = new VertexPositionColorTexture[Stars.Length * 4];
+            for (int i = 0; i < Stars.Length; i++)
+            {
+                // Acquire vertices for the star.
+                Stars[i].GenerateVertices(1f, out var topLeft, out var topRight, out var bottomLeft, out var bottomRight);
+
+                int bufferIndex = i * 4;
+                vertices[bufferIndex] = topLeft;
+                vertices[bufferIndex + 1] = topRight;
+                vertices[bufferIndex + 2] = bottomRight;
+                vertices[bufferIndex + 3] = bottomLeft;
+            }
+
+            // Send the vertices to the buffer.
+            StarVertexBuffer.SetData(vertices);
+        }
+
+        internal static void RegenerateIndexBuffer()
+        {
+            // Initialize the star buffer if necessary.
+            StarIndexBuffer?.Dispose();
+            StarIndexBuffer = new(Main.instance.GraphicsDevice, IndexElementSize.SixteenBits, Stars.Length * 6, BufferUsage.WriteOnly);
+
+            // Generate index data.
+            short[] indices = new short[Stars.Length * 6];
+            for (int i = 0; i < Stars.Length; i++)
+            {
+                int bufferIndex = i * 6;
+                short vertexIndex = (short)(i * 4);
+                indices[bufferIndex] = vertexIndex;
+                indices[bufferIndex + 1] = (short)(vertexIndex + 1);
+                indices[bufferIndex + 2] = (short)(vertexIndex + 2);
+                indices[bufferIndex + 3] = (short)(vertexIndex + 2);
+                indices[bufferIndex + 4] = (short)(vertexIndex + 3);
+                indices[bufferIndex + 5] = vertexIndex;
+            }
+            StarIndexBuffer.SetData(indices);
+        }
+
+        public static void Render(float opacity, Matrix backgroundMatrix)
         {
             // Make vanilla's stars disappear. They are not needed.
             for (int i = 0; i < Main.numStars; i++)
-                Main.star[i] = new();
+                Main.star[i].hidden = true;
 
             // Draw custom stars.
             float skyBrightness = (Main.ColorOfTheSkies.R + Main.ColorOfTheSkies.G + Main.ColorOfTheSkies.B) / 765f;
@@ -20,42 +139,34 @@ namespace RealisticSky.Content
             if (starOpacity <= 0f)
                 return;
 
-            int starCount = RealisticSkyConfig.Instance.PerformanceMode ? 1050 : 2000;
-            float yOffset = spaceInterpolant * 600f + 250f;
-            ulong starSeed = 71493uL;
-            Vector2 screenSize = new(Main.instance.GraphicsDevice.Viewport.Width, Main.instance.GraphicsDevice.Viewport.Height);
-            Texture2D bloom = ModContent.Request<Texture2D>("RealisticSky/Assets/ExtraTextures/BloomCircle").Value;
-            for (int i = 0; i < starCount; i++)
-            {
-                // Randomly calculate the star's draw position.
-                float starX = MathHelper.Lerp(-350f, screenSize.X + 350f, Utils.RandomFloat(ref starSeed));
-                float starY = MathHelper.Lerp(-10f, screenSize.Y * 0.5f, MathF.Pow(Utils.RandomFloat(ref starSeed), 1.5f));
+            // Calculate the star matrix.
+            Matrix projection = Matrix.CreateOrthographicOffCenter(0f, 1f, 1f, 0f, -100f, 100f);
+            Vector2 screenSize = Vector2.Transform(new Vector2(Main.instance.GraphicsDevice.Viewport.Width, Main.instance.GraphicsDevice.Viewport.Height), backgroundMatrix);
 
-                // Randomly calculate the size of the star. This is heavily biased towards the minimum value, to ensure that large stars are a rarity.
-                float starSize = MathHelper.Lerp(0.12f, 0.42f, MathF.Pow(Utils.RandomFloat(ref starSeed), 5.5f));
+            // Prepare the star shader.
+            Effect starShader = GameShaders.Misc[StarShaderKey].Shader;
+            starShader.Parameters["opacity"]?.SetValue(starOpacity);
+            starShader.Parameters["projection"]?.SetValue(projection);
+            starShader.Parameters["globalTime"]?.SetValue(Main.GlobalTimeWrappedHourly * 5f);
+            starShader.Parameters["sunPosition"]?.SetValue(Main.dayTime ? SunPositionSaver.SunPosition : Vector2.One * 50000f);
+            starShader.Parameters["screenSize"]?.SetValue(screenSize);
+            starShader.CurrentTechnique.Passes[0].Apply();
 
-                // Randomly calculate the star's color. Most are white-ish yellow, but some can have a blue-ish white color
-                float starColorInterpolant = Utils.RandomFloat(ref starSeed);
-                float starFlarePulse = MathHelper.Lerp(0.85f, 1.2f, MathF.Cos(Main.GlobalTimeWrappedHourly * 4.4f + i * 2.3f) * 0.5f + 0.5f);
-                Color starColor = Color.Lerp(Color.Wheat, Color.LightGoldenrodYellow, starColorInterpolant);
-                starColor = Color.Lerp(starColor, Color.Cyan, Utils.GetLerpValue(0.7f, 1f, starColorInterpolant) * 0.6f);
-                starColor.A = 0;
+            // Request the atmosphere target.
+            AtmosphereRenderer.AtmosphereTarget.Request();
 
-                // Make stars that go into the atmosphere far, far less visible.
-                float atmospherePieceInterpolant = MathHelper.Lerp(Utils.GetLerpValue(-120f, -170f, starY - yOffset, true), 1f, MathF.Pow(1f - sunriseAndSetInterpolant, 2f));
-                float localStarOpacity = starOpacity * atmospherePieceInterpolant;
+            Main.instance.GraphicsDevice.Textures[1] = ModContent.Request<Texture2D>("RealisticSky/Assets/ExtraTextures/BloomCircle").Value;
+            Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
+            Main.instance.GraphicsDevice.Textures[2] = !AtmosphereRenderer.AtmosphereTarget.IsReady ? TextureAssets.MagicPixel.Value : AtmosphereRenderer.AtmosphereTarget.GetTarget();
+            Main.instance.GraphicsDevice.SamplerStates[2] = SamplerState.LinearClamp;
+            Main.instance.GraphicsDevice.RasterizerState = RasterizerState.CullNone;
 
-                // Make stars super close to the sun far, far less visible, since its light should overpower that of the super distant stars.
-                float distanceToSun = new Vector2(starX, starY).Distance(transformedSunPosition);
-                localStarOpacity *= MathF.Pow(Utils.GetLerpValue(70f, 160f, distanceToSun - spaceInterpolant * 50f, true), 2.5f);
-
-                // Draw the star.
-                Color brightStarColor = Color.Lerp(starColor, Color.White with { A = 0 }, 0.5f);
-                Vector2 starDrawPosition = new(starX, starY);
-                Main.spriteBatch.Draw(bloom, starDrawPosition, null, starColor * localStarOpacity * 0.9f, 0f, bloom.Size() * 0.5f, starSize / starFlarePulse * 0.2f, 0, 0f);
-                if (starSize >= 0.14f)
-                    Main.spriteBatch.Draw(bloom, starDrawPosition, null, brightStarColor * localStarOpacity, 0f, bloom.Size() * 0.5f, starSize / starFlarePulse * 0.1f, 0, 0f);
-            }
+            // Render the stars.
+            Main.instance.GraphicsDevice.Indices = StarIndexBuffer;
+            Main.instance.GraphicsDevice.SetVertexBuffer(StarVertexBuffer);
+            Main.instance.GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, StarVertexBuffer.VertexCount, 0, StarIndexBuffer.IndexCount / 3);
+            Main.instance.GraphicsDevice.SetVertexBuffer(null);
+            Main.instance.GraphicsDevice.Indices = null;
         }
     }
 }
