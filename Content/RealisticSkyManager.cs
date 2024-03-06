@@ -9,6 +9,9 @@ namespace RealisticSky.Content
     {
         private bool skyActive;
 
+        /// <summary>
+        /// The general opacity of this sky.
+        /// </summary>
         internal static new float Opacity;
 
         /// <summary>
@@ -84,6 +87,7 @@ namespace RealisticSky.Content
 
         public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
+            // Prevent drawing beyond the back layer.
             if (maxDepth < float.MaxValue || minDepth >= float.MaxValue)
                 return;
 

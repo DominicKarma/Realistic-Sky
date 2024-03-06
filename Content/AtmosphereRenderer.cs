@@ -10,6 +10,9 @@ namespace RealisticSky.Content
 {
     public class AtmosphereRenderer : ModSystem
     {
+        /// <summary>
+        /// The render target that holds the contents of the atmosphere.
+        /// </summary>
         internal static AtmosphereTargetContent AtmosphereTarget;
 
         /// <summary>

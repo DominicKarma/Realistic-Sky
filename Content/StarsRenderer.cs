@@ -33,6 +33,11 @@ namespace RealisticSky.Content
         internal static BasicEffect StarShader;
 
         /// <summary>
+        /// The amount of stars to draw in the sky.
+        /// </summary>
+        public const int StarCount = 16000;
+
+        /// <summary>
         /// The identifier key for the sky's star shader.
         /// </summary>
         public const string StarShaderKey = "RealisticSky:StarShader";
@@ -43,7 +48,7 @@ namespace RealisticSky.Content
             GameShaders.Misc[StarShaderKey] = new MiscShaderData(new(ModContent.Request<Effect>("RealisticSky/Assets/Effects/StarPrimitiveShader", AssetRequestMode.ImmediateLoad).Value), "AutoloadPass");
 
             // Generate stars.
-            GenerateStars(16000);
+            GenerateStars(StarCount);
         }
 
         internal static void GenerateStars(int starCount)
