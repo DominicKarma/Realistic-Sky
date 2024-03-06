@@ -7,7 +7,7 @@ using Terraria.Graphics.Effects;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 
-namespace RealisticSky
+namespace RealisticSky.Content
 {
     public class RealisticSkyManager : CustomSky
     {
@@ -63,7 +63,7 @@ namespace RealisticSky
                 sunriseAndSetInterpolant *= Utils.GetLerpValue((float)Main.dayLength, (float)Main.dayLength - 6700f, (float)Main.time, true);
             if (!Main.dayTime)
                 sunriseAndSetInterpolant = 0f;
-            DrawStars(spaceInterpolant, sunriseAndSetInterpolant, Vector2.Transform(RealisticSkyManagerScene.SunPosition, Matrix.Invert(backgroundMatrix)));
+            DrawStars(spaceInterpolant, sunriseAndSetInterpolant, Vector2.Transform(SunPositionSaver.SunPosition, Matrix.Invert(backgroundMatrix)));
 
             // Prepare for sky drawing.
             Main.spriteBatch.End();
@@ -141,7 +141,7 @@ namespace RealisticSky
             float bloomOpacity = MathHelper.Lerp(1f, 0.5f, sunriseAndSetInterpolant);
             float scaleFactor = (spaceInterpolant * 0.21f + 1f) * bloomOpacity;
             float pureWhiteInterpolant = MathF.Pow(spaceInterpolant, 2f);
-            Vector2 sunPosition = RealisticSkyManagerScene.SunPosition;
+            Vector2 sunPosition = SunPositionSaver.SunPosition;
             Texture2D bloom = ModContent.Request<Texture2D>("RealisticSky/Assets/ExtraTextures/BloomCircle").Value;
 
             // Draw the innermost, bright yellow bloom.
@@ -195,14 +195,13 @@ namespace RealisticSky
 
             // Prepare the sky shader.
             Effect shader = GameShaders.Misc[ShaderKey].Shader;
-            Vector2 sunPosition = RealisticSkyManagerScene.SunPosition;
             shader.Parameters["globalTime"]?.SetValue(Main.GlobalTimeWrappedHourly);
             shader.Parameters["atmosphereRadius"]?.SetValue(radius);
             shader.Parameters["planetRadius"]?.SetValue(radius * 0.8f);
             shader.Parameters["invertedGravity"]?.SetValue(Main.LocalPlayer.gravDir == -1f);
             shader.Parameters["performanceMode"]?.SetValue(RealisticSkyConfig.Instance.PerformanceMode);
             shader.Parameters["screenHeight"]?.SetValue(screenSize.Y);
-            shader.Parameters["sunPosition"]?.SetValue(new Vector3(sunPosition, -50f));
+            shader.Parameters["sunPosition"]?.SetValue(new Vector3(SunPositionSaver.SunPosition, -50f));
             shader.Parameters["planetPosition"]?.SetValue(new Vector2(screenSize.X * 0.5f, radius + yOffset));
             shader.Parameters["rgbLightWavelengths"]?.SetValue(new Vector3(750f, 530f, 430f));
             shader.CurrentTechnique.Passes[0].Apply();
