@@ -77,9 +77,12 @@ namespace RealisticSky.Content
             Vector3 translationDirection = new(1f, Main.BackgroundViewMatrix.Effects.HasFlag(SpriteEffects.FlipVertically) ? -1f : 1f, 1f);
             backgroundMatrix.Translation -= Main.BackgroundViewMatrix.ZoomMatrix.Translation * translationDirection;
 
-            // Calculate various useful interpolants in advance.
+            // Calculate height interpolants in advance.
             float worldYInterpolant = Main.LocalPlayer.Center.Y / Main.maxTilesY / 16f;
-            float spaceInterpolant = MathHelper.SmoothStep(0f, 1f, Utils.GetLerpValue(SpaceYRatioStart, SpaceYRatioEnd, worldYInterpolant, true));
+            float spaceInterpolant = Utils.GetLerpValue(SpaceYRatioStart, SpaceYRatioEnd, worldYInterpolant, true);
+
+            // Apply a smoothstep function to the space interpolant, since that helps make the transitions more natural.
+            spaceInterpolant = MathHelper.SmoothStep(0f, 1f, spaceInterpolant);
 
             // Draw stars.
             Vector2 transformedSunPosition = Vector2.Transform(SunPositionSaver.SunPosition, Matrix.Invert(backgroundMatrix));
