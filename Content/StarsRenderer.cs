@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 using SpecialStar = RealisticSky.Common.DataStructures.Star;
@@ -126,7 +127,7 @@ namespace RealisticSky.Content
             StarIndexBuffer.SetData(indices);
         }
 
-        public static void Render(float opacity)
+        public static void Render(float opacity, Matrix backgroundMatrix)
         {
             // Make vanilla's stars disappear. They are not needed.
             for (int i = 0; i < Main.numStars; i++)
@@ -140,17 +141,24 @@ namespace RealisticSky.Content
 
             // Calculate the star matrix.
             Matrix projection = Matrix.CreateOrthographicOffCenter(0f, 1f, 1f, 0f, -100f, 100f);
+            Vector2 screenSize = Vector2.Transform(new Vector2(Main.instance.GraphicsDevice.Viewport.Width, Main.instance.GraphicsDevice.Viewport.Height), backgroundMatrix);
 
             // Prepare the star shader.
             Effect starShader = GameShaders.Misc[StarShaderKey].Shader;
             starShader.Parameters["opacity"]?.SetValue(starOpacity);
             starShader.Parameters["projection"]?.SetValue(projection);
-            starShader.Parameters["globalTime"]?.SetValue(Main.GlobalTimeWrappedHourly * 8f);
-            starShader.Parameters["sunPosition"]?.SetValue(SunPositionSaver.SunPosition);
+            starShader.Parameters["globalTime"]?.SetValue(Main.GlobalTimeWrappedHourly * 5f);
+            starShader.Parameters["sunPosition"]?.SetValue(Main.dayTime ? SunPositionSaver.SunPosition : Vector2.One * 50000f);
+            starShader.Parameters["screenSize"]?.SetValue(screenSize);
             starShader.CurrentTechnique.Passes[0].Apply();
+
+            // Request the atmosphere target.
+            AtmosphereRenderer.AtmosphereTarget.Request();
 
             Main.instance.GraphicsDevice.Textures[1] = ModContent.Request<Texture2D>("RealisticSky/Assets/ExtraTextures/BloomCircle").Value;
             Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
+            Main.instance.GraphicsDevice.Textures[2] = !AtmosphereRenderer.AtmosphereTarget.IsReady ? TextureAssets.MagicPixel.Value : AtmosphereRenderer.AtmosphereTarget.GetTarget();
+            Main.instance.GraphicsDevice.SamplerStates[2] = SamplerState.LinearClamp;
             Main.instance.GraphicsDevice.RasterizerState = RasterizerState.CullNone;
 
             // Render the stars.

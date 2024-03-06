@@ -67,6 +67,21 @@ namespace RealisticSky.Content
             }
         }
 
+        /// <summary>
+        /// How far up in space the player is, on a 0-1 interpolant.
+        /// </summary>
+        public static float SpaceHeightInterpolant
+        {
+            get
+            {
+                float worldYInterpolant = Main.LocalPlayer.Center.Y / Main.maxTilesY / 16f;
+                float spaceInterpolant = Utils.GetLerpValue(SpaceYRatioStart, SpaceYRatioEnd, worldYInterpolant, true);
+
+                // Apply a smoothstep function to the space interpolant, since that helps make the transitions more natural.
+                return MathHelper.SmoothStep(0f, 1f, spaceInterpolant);
+            }
+        }
+
         public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
             if (maxDepth < float.MaxValue || minDepth >= float.MaxValue)
@@ -77,29 +92,18 @@ namespace RealisticSky.Content
             Vector3 translationDirection = new(1f, Main.BackgroundViewMatrix.Effects.HasFlag(SpriteEffects.FlipVertically) ? -1f : 1f, 1f);
             backgroundMatrix.Translation -= Main.BackgroundViewMatrix.ZoomMatrix.Translation * translationDirection;
 
-            // Calculate height interpolants in advance.
-            float worldYInterpolant = Main.LocalPlayer.Center.Y / Main.maxTilesY / 16f;
-            float spaceInterpolant = Utils.GetLerpValue(SpaceYRatioStart, SpaceYRatioEnd, worldYInterpolant, true);
-
-            // Apply a smoothstep function to the space interpolant, since that helps make the transitions more natural.
-            spaceInterpolant = MathHelper.SmoothStep(0f, 1f, spaceInterpolant);
-
             // Draw stars.
-            StarsRenderer.Render(Opacity);
-
-            // Prepare for atmosphere drawing by allowing shaders.
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, backgroundMatrix);
+            StarsRenderer.Render(Opacity, backgroundMatrix);
 
             // Draw the atmosphere.
-            AtmosphereRenderer.Render(worldYInterpolant, spaceInterpolant);
+            AtmosphereRenderer.RenderFromTarget();
 
             // Draw bloom over the sun.
             if (!Main.eclipse && Main.dayTime)
             {
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
-                SunRenderer.Render(spaceInterpolant, 1f - SunlightIntensityByTime);
+                SunRenderer.Render(1f - SunlightIntensityByTime);
             }
 
             // Return to standard drawing.
