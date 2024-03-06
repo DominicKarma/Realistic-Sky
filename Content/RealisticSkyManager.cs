@@ -85,8 +85,7 @@ namespace RealisticSky.Content
             spaceInterpolant = MathHelper.SmoothStep(0f, 1f, spaceInterpolant);
 
             // Draw stars.
-            Vector2 transformedSunPosition = Vector2.Transform(SunPositionSaver.SunPosition, Matrix.Invert(backgroundMatrix));
-            StarsRenderer.Render(spaceInterpolant, SunlightIntensityByTime, Opacity, transformedSunPosition);
+            StarsRenderer.Render(Opacity);
 
             // Prepare for atmosphere drawing by allowing shaders.
             Main.spriteBatch.End();
