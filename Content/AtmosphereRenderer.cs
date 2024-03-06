@@ -45,7 +45,7 @@ namespace RealisticSky.Content
             shader.Parameters["rgbLightWavelengths"]?.SetValue(new Vector3(750f, 530f, 430f));
             shader.CurrentTechnique.Passes[0].Apply();
 
-            // Draw the sky.
+            // Draw the atmosphere.
             Texture2D pixel = TextureAssets.MagicPixel.Value;
             Vector2 drawPosition = screenSize * 0.5f;
             Vector2 skyScale = screenSize / pixel.Size();
