@@ -26,7 +26,9 @@ namespace RealisticSky.Content
             Vector2 screenSize = new(Main.instance.GraphicsDevice.Viewport.Width, Main.instance.GraphicsDevice.Viewport.Height);
 
             // Calculate opacity and brightness values based on a combination of how far in space the player is and what the general sky brightness is.
-            float surfaceInterpolant = Utils.GetLerpValue(0.071f, 0.11f, worldYInterpolant, true);
+            float upperSurfaceRatioStart = (float)(Main.worldSurface / Main.maxTilesY) * 0.5f;
+            float surfaceInterpolant = Utils.GetLerpValue(RealisticSkyManager.SpaceYRatioStart, upperSurfaceRatioStart, worldYInterpolant, true);
+
             float radius = MathHelper.Lerp(17000f, 7000f, spaceInterpolant);
             float yOffset = (spaceInterpolant * 600f + 250f) * screenSize.Y / 1440f;
             float baseSkyBrightness = (Main.ColorOfTheSkies.R + Main.ColorOfTheSkies.G + Main.ColorOfTheSkies.B) / 765f;

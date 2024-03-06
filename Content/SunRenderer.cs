@@ -34,23 +34,13 @@ namespace RealisticSky.Content
             // Draw a lens flare over everything when in space.
             if (spaceInterpolant > 0f)
             {
-                int lensFlareCount = 1;
-                ulong seed = 11589uL;
-
                 Texture2D lensFlare = ModContent.Request<Texture2D>("RealisticSky/Assets/ExtraTextures/LensFlare").Value;
-                for (int i = 0; i < lensFlareCount; i++)
-                {
-                    float lensFlareScaleInterpolant = MathF.Cos(Utils.RandomFloat(ref seed) * MathHelper.TwoPi + Main.GlobalTimeWrappedHourly * 0.3f) * 0.5f + 0.5f;
-                    float lensFlareScale = MathF.Pow(spaceInterpolant, 0.7f) * MathHelper.Lerp(0.8f, 1.1f, lensFlareScaleInterpolant);
-                    Color lensFlareColor = Color.LightGoldenrodYellow;
-                    lensFlareColor.R -= 10;
-                    lensFlareColor.B += 12;
-                    lensFlareColor *= spaceInterpolant * lensFlareScale;
-                    lensFlareColor.A = 0;
-
-                    float lensFlareRotation = MathHelper.TwoPi * i / lensFlareCount + Main.GlobalTimeWrappedHourly * 0.045f;
-                    Main.spriteBatch.Draw(lensFlare, sunPosition, null, lensFlareColor, lensFlareRotation + lensFlareScaleInterpolant * 0.1f, lensFlare.Size() * 0.5f, lensFlareScale, 0, 0f);
-                }
+                float lensFlareScale = MathF.Pow(spaceInterpolant, 0.7f) * 1.3f;
+                Color lensFlareColor = Color.LightCyan;
+                lensFlareColor *= spaceInterpolant * lensFlareScale * 0.35f;
+                lensFlareColor.A = 0;
+                Main.spriteBatch.Draw(lensFlare, sunPosition, null, lensFlareColor, Main.GlobalTimeWrappedHourly * -0.02f, new(352f, 405f), lensFlareScale, 0, 0f);
+                Main.spriteBatch.Draw(lensFlare, sunPosition, null, lensFlareColor, Main.GlobalTimeWrappedHourly * 0.03f, new(352f, 405f), lensFlareScale, 0, 0f);
             }
         }
     }
