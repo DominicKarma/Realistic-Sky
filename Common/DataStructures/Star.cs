@@ -23,15 +23,21 @@ namespace RealisticSky.Common.DataStructures
         public readonly float Radius;
 
         /// <summary>
+        /// The twinkle phase shift of this star.
+        /// </summary>
+        public readonly float TwinklePhaseShift;
+
+        /// <summary>
         /// The color of this star.
         /// </summary>
         public readonly Color Color;
 
         [SuppressMessage("Style", "IDE0290:Use primary constructor")]
-        public Star(float xRatio, float yRatio, Color color, float radius)
+        public Star(float xRatio, float yRatio, Color color, float radius, float twinklePhaseShift)
         {
             ScreenXPositionRatio = xRatio;
             ScreenYPositionRatio = yRatio;
+            TwinklePhaseShift = twinklePhaseShift;
             Color = color;
             Radius = radius;
         }
@@ -50,10 +56,10 @@ namespace RealisticSky.Common.DataStructures
             Vector2 bottomRightPosition = screenPosition + radiusVector;
 
             // Generate vertices.
-            topLeft = new(new(topLeftPosition, 0f), Color, Vector2.Zero);
-            topRight = new(new(topRightPosition, 0f), Color, Vector2.UnitX);
-            bottomLeft = new(new(bottomLeftPosition, 0f), Color, Vector2.UnitY);
-            bottomRight = new(new(bottomRightPosition, 0f), Color, Vector2.One);
+            topLeft = new(new(topLeftPosition, TwinklePhaseShift), Color, Vector2.Zero);
+            topRight = new(new(topRightPosition, TwinklePhaseShift), Color, Vector2.UnitX);
+            bottomLeft = new(new(bottomLeftPosition, TwinklePhaseShift), Color, Vector2.UnitY);
+            bottomRight = new(new(bottomRightPosition, TwinklePhaseShift), Color, Vector2.One);
         }
     }
 }

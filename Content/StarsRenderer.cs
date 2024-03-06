@@ -42,7 +42,7 @@ namespace RealisticSky.Content
             GameShaders.Misc[StarShaderKey] = new MiscShaderData(new(ModContent.Request<Effect>("RealisticSky/Assets/Effects/StarPrimitiveShader", AssetRequestMode.ImmediateLoad).Value), "AutoloadPass");
 
             // Generate stars.
-            GenerateStars(3200);
+            GenerateStars(16000);
         }
 
         internal static void GenerateStars(int starCount)
@@ -52,7 +52,7 @@ namespace RealisticSky.Content
             {
                 // Calculate the position of the star on the screen. The Y position is biased a bit towards the top by making the random interpolant generally favor being closer to 0.
                 float xPositionRatio = Main.rand.NextFloat(-0.05f, 1.05f);
-                float yPositionRatio = MathHelper.Lerp(-0.05f, 0.5f, MathF.Pow(Main.rand.NextFloat(), 1.5f));
+                float yPositionRatio = MathHelper.Lerp(-0.05f, 1f, MathF.Pow(Main.rand.NextFloat(), 1.5f));
 
                 // Calculate the star color.
                 Color color = Color.Lerp(Color.Wheat, Color.LightGoldenrodYellow, Main.rand.NextFloat());
@@ -61,9 +61,15 @@ namespace RealisticSky.Content
                 color.A = 0;
 
                 // Calculate the star's radius. These are harshly biased towards being tiny.
-                float radius = MathHelper.Lerp(3f, 9f, MathF.Pow(Main.rand.NextFloat(), 8f));
+                float radius = MathHelper.Lerp(2f, 4.3f, MathF.Pow(Main.rand.NextFloat(), 9f));
+                if (Main.rand.NextBool(30))
+                    radius *= 1.3f;
+                if (Main.rand.NextBool(50))
+                    radius *= 1.3f;
+                if (Main.rand.NextBool(50))
+                    radius *= 1.45f;
 
-                Stars[i] = new(xPositionRatio, yPositionRatio, color, radius);
+                Stars[i] = new(xPositionRatio, yPositionRatio, color * MathF.Pow(radius / 6f, 1.5f), radius, Main.rand.NextFloat(MathHelper.TwoPi));
             }
             Main.QueueMainThreadAction(RegenerateBuffers);
         }
@@ -124,7 +130,7 @@ namespace RealisticSky.Content
         {
             // Make vanilla's stars disappear. They are not needed.
             for (int i = 0; i < Main.numStars; i++)
-                Main.star[i] = new();
+                Main.star[i].hidden = true;
 
             // Draw custom stars.
             float skyBrightness = (Main.ColorOfTheSkies.R + Main.ColorOfTheSkies.G + Main.ColorOfTheSkies.B) / 765f;
@@ -135,14 +141,14 @@ namespace RealisticSky.Content
             // Calculate the star matrix.
             Matrix projection = Matrix.CreateOrthographicOffCenter(0f, 1f, 1f, 0f, -100f, 100f);
 
-            if (Main.mouseRight && Main.mouseRightRelease)
-                GenerateStars(7000);
-
             // Prepare the star shader.
             Effect starShader = GameShaders.Misc[StarShaderKey].Shader;
             starShader.Parameters["opacity"]?.SetValue(starOpacity);
             starShader.Parameters["projection"]?.SetValue(projection);
+            starShader.Parameters["globalTime"]?.SetValue(Main.GlobalTimeWrappedHourly * 8f);
+            starShader.Parameters["sunPosition"]?.SetValue(SunPositionSaver.SunPosition);
             starShader.CurrentTechnique.Passes[0].Apply();
+
             Main.instance.GraphicsDevice.Textures[1] = ModContent.Request<Texture2D>("RealisticSky/Assets/ExtraTextures/BloomCircle").Value;
             Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
             Main.instance.GraphicsDevice.RasterizerState = RasterizerState.CullNone;
