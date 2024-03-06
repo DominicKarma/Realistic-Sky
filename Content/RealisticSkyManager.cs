@@ -16,6 +16,41 @@ namespace RealisticSky.Content
         /// </summary>
         public const string SkyKey = "RealisticSky:Sky";
 
+        /// <summary>
+        /// How long, in frames, that sunrises should last for the purposes of this sky's visuals.
+        /// </summary>
+        public const int DawnDuration = 6700;
+
+        /// <summary>
+        /// How long, in frames, that sunsets should last for the purposes of this sky's visuals.
+        /// </summary>
+        public const int DuskDuration = 6700;
+
+        /// <summary>
+        /// The intensity of light based on dawn or dusk as a 0-1 ratio.
+        /// </summary>
+        public static float SunlightIntensityByTime
+        {
+            get
+            {
+                // Return 0 immediately if it's night time, since night time does not count towards dawn or dusk.
+                if (!Main.dayTime)
+                    return 0f;
+
+                // If the time is less than the dawn duration, interpolate between it.
+                // This will make the slope of this function go up from 0 to 1.
+                float dawnDuskInterpolant = Utils.GetLerpValue(0f, DawnDuration, (float)Main.time, true);
+
+                // If the time is greater than the dawn duration, account for the dusk duration instead.
+                // Since this is a multiplication, it will be multiplying the previous result (which is 1, since again, this only happens after dawn is over) by
+                // the dusk interpolant. This will make the value's slow go down as dusk's progression increases, until eventually it's 0 again by night time.
+                if (Main.time > DawnDuration)
+                    dawnDuskInterpolant *= Utils.GetLerpValue((float)Main.dayLength, (float)Main.dayLength - DuskDuration, (float)Main.time, true);
+
+                return dawnDuskInterpolant;
+            }
+        }
+
         public override void Deactivate(params object[] args)
         {
             skyActive = false;
@@ -49,14 +84,9 @@ namespace RealisticSky.Content
             // Calculate various useful interpolants in advance.
             float worldYInterpolant = Main.LocalPlayer.Center.Y / Main.maxTilesY / 16f;
             float spaceInterpolant = MathHelper.SmoothStep(0f, 1f, Utils.GetLerpValue(0.074f, 0.024f, worldYInterpolant, true));
-            float sunriseAndSetInterpolant = Utils.GetLerpValue(0f, 6700f, (float)Main.time, true);
-            if (Main.time > 6700f)
-                sunriseAndSetInterpolant *= Utils.GetLerpValue((float)Main.dayLength, (float)Main.dayLength - 6700f, (float)Main.time, true);
-            if (!Main.dayTime)
-                sunriseAndSetInterpolant = 0f;
 
             // Draw stars.
-            StarsRenderer.Render(spaceInterpolant, sunriseAndSetInterpolant, Opacity, Vector2.Transform(SunPositionSaver.SunPosition, Matrix.Invert(backgroundMatrix)));
+            StarsRenderer.Render(spaceInterpolant, SunlightIntensityByTime, Opacity, Vector2.Transform(SunPositionSaver.SunPosition, Matrix.Invert(backgroundMatrix)));
 
             // Prepare for atmosphere drawing by allowing shaders.
             Main.spriteBatch.End();
@@ -70,7 +100,7 @@ namespace RealisticSky.Content
             {
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
-                SunRenderer.Render(spaceInterpolant, 1f - sunriseAndSetInterpolant);
+                SunRenderer.Render(spaceInterpolant, 1f - SunlightIntensityByTime);
             }
 
             // Return to standard drawing.
