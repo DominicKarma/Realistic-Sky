@@ -48,6 +48,8 @@ namespace RealisticSky.Content
             float specialSkyOpacity = Utils.GetLerpValue(0.08f, 0.2f, baseSkyBrightness + spaceInterpolant * 0.4f, true) * MathHelper.Lerp(1f, 0.5f, surfaceInterpolant) * Utils.Remap(baseSkyBrightness, 0.078f, 0.16f, 0.9f, 1f);
 
             // Prepare the sky shader.
+            RealisticSkyConfig config = RealisticSkyConfig.Instance;
+            Vector3 lightWavelengths = new(config.RedWavelength, config.GreenWavelength, config.BlueWavelength);
             Effect shader = GameShaders.Misc[AtmosphereShaderKey].Shader;
             shader.Parameters["globalTime"]?.SetValue(Main.GlobalTimeWrappedHourly);
             shader.Parameters["atmosphereRadius"]?.SetValue(radius);
@@ -57,7 +59,7 @@ namespace RealisticSky.Content
             shader.Parameters["screenHeight"]?.SetValue(screenSize.Y);
             shader.Parameters["sunPosition"]?.SetValue(new Vector3(SunPositionSaver.SunPosition, -50f));
             shader.Parameters["planetPosition"]?.SetValue(new Vector2(screenSize.X * 0.4f, radius + yOffset));
-            shader.Parameters["rgbLightWavelengths"]?.SetValue(new Vector3(750f, 530f, 430f));
+            shader.Parameters["rgbLightWavelengths"]?.SetValue(lightWavelengths);
             shader.CurrentTechnique.Passes[0].Apply();
 
             // Draw the atmosphere.

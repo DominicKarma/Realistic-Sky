@@ -6,5 +6,20 @@ Configs: {
 			Label: Performance Mode
 			Tooltip: Whether sky quality should be sacrificed in favor of performance.
 		}
+
+		RedWavelength: {
+			Label: Red Wavelength
+			Tooltip: The wavelength of red light, in nanometers, according to the atmosphere effect.
+		}
+
+		GreenWavelength: {
+			Label: Green Wavelength
+			Tooltip: The wavelength of green light, in nanometers, according to the atmosphere effect.
+		}
+
+		BlueWavelength: {
+			Label: Blue Wavelength
+			Tooltip: The wavelength of blue light, in nanometers, according to the atmosphere effect.
+		}
 	}
 }
