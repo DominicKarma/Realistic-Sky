@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using RealisticSky.Common.DataStructures;
+using RealisticSky.Core.CrossCompatibility.Inbound;
 using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
@@ -136,7 +137,7 @@ namespace RealisticSky.Content
                 if (Main.star[i] is null)
                     continue;
 
-                Main.star[i].hidden = player.Center.Y <= player.WorldSurface * 16f;
+                Main.star[i].hidden = player.Center.Y <= player.WorldSurface * 16f && !CalamityModCompatibility.InAstralBiome(Main.LocalPlayer);
             }
 
             // Draw custom stars.
