@@ -98,6 +98,7 @@ namespace RealisticSky.Content
             Vector2 drawPosition = screenSize * 0.5f;
             Vector2 skyScale = screenSize / cloud.Size();
             Color cloudsColor = Color.Lerp(Main.ColorOfTheSkies, Color.White, 0.05f) * MathF.Pow(cloudOpacity, 0.67f) * 2.67f;
+            cloudsColor = Color.Lerp(cloudsColor, Color.OrangeRed, Main.dayTime ? 1f - RealisticSkyManager.SunlightIntensityByTime : 0f);
             cloudsColor.A = (byte)(cloudOpacity * 255f);
             Main.spriteBatch.Draw(cloud, drawPosition, null, cloudsColor, 0f, cloud.Size() * 0.5f, skyScale, 0, 0f);
         }
