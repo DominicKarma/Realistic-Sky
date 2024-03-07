@@ -4,6 +4,8 @@ bool invertedGravity;
 float globalTime;
 float cloudDensity;
 float horizontalOffset;
+float cloudFadeHeightTop;
+float cloudFadeHeightBottom;
 float2 parallax;
 float2 screenSize;
 float2 worldPosition;
@@ -63,7 +65,7 @@ float CalculateAtmosphereDensityAtPoint(float3 p)
     density += densityData.g * cloudDensity - p.y * (0.1 - cloudDensity) * 0.5;
     
     // Make the density taper off near the top of the world.
-    density *= smoothstep(3200, 4000, localWorldPosition.y);
+    density *= smoothstep(cloudFadeHeightTop, cloudFadeHeightBottom, localWorldPosition.y - density * 100);
     
     // Combine things together.
     return density * cloudDensity * 0.7;
