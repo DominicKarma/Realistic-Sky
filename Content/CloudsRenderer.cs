@@ -78,7 +78,7 @@ namespace RealisticSky.Content
             shader.Parameters["globalTime"]?.SetValue(Main.GlobalTimeWrappedHourly);
             shader.Parameters["worldPosition"]?.SetValue(Main.screenPosition);
             shader.Parameters["cloudFadeHeightTop"]?.SetValue(3200f);
-            shader.Parameters["cloudFadeHeightBottom"]?.SetValue(4000f);
+            shader.Parameters["cloudFadeHeightBottom"]?.SetValue(4400f);
             shader.Parameters["parallax"]?.SetValue(new Vector2(0.3f, 0.175f) * Main.caveParallax);
             shader.Parameters["cloudDensity"]?.SetValue(MathHelper.Clamp(cloudOpacity * 1.2f, 0f, 1f));
             shader.Parameters["horizontalOffset"]?.SetValue(CloudHorizontalOffset);
@@ -91,7 +91,6 @@ namespace RealisticSky.Content
             Vector2 skyScale = screenSize / cloud.Size();
             Color cloudsColor = Color.Lerp(Main.ColorOfTheSkies, Color.White, 0.05f) * MathF.Pow(cloudOpacity, 0.67f) * 2.67f;
             cloudsColor.A = (byte)(cloudOpacity * 255f);
-            cloudsColor = Color.White;
             Main.spriteBatch.Draw(cloud, drawPosition, null, cloudsColor, 0f, cloud.Size() * 0.5f, skyScale, 0, 0f);
         }
     }

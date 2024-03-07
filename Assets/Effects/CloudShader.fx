@@ -61,13 +61,13 @@ float CalculateCloudDensityAtPoint(float3 p)
     float density = lerp(densityA, densityB, sin(p.z * 6.283) * 0.5 + 0.5);
     
     // Add secondary cloud density values in accordance with the general cloud density shader parameter.
-    density += densityData.g * cloudDensity - p.y * (0.1 - cloudDensity) * 0.5;
+    density += densityData.g * cloudDensity - p.y * (0.1 - cloudDensity) * 0.5 - uvOffset * 5;
     
     // Make the density taper off near the top of the world.
     density *= smoothstep(cloudFadeHeightTop, cloudFadeHeightBottom, localWorldPosition.y - density * 100);
     
     // Combine things together.
-    return density * cloudDensity * 0.7;
+    return density * cloudDensity * lerp(0.15, 0.9, cloudDensity);
 }
 
 // Optical depth in this context basically is a measure of how much air is present along a given ray.
@@ -141,7 +141,7 @@ float4 CalculateScatteredLight(float3 rayOrigin, float3 rayDirection)
     float cosTheta = dot(rayDirection, normalize(sunPosition - boxStart));
     float cosThetaSquared = cosTheta * cosTheta;
     float phaseMie = ((1 - gSquared) * (cosThetaSquared + 1)) / (pow(1 + gSquared - cosTheta * g * 2, 1.5) * (gSquared + 2)) * 0.1193662; // This constant is equal to 3/(8pi)
-    return light * inScatterStep * phaseMie * 300;
+    return light * inScatterStep * phaseMie * 800;
 }
 
 float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD0, float4 position : SV_Position) : COLOR0
@@ -153,6 +153,7 @@ float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD
     // Calculate how much scattered light will end up in the current fragment.
     float4 cloudLight = CalculateScatteredLight(float3(position.xy, -1), float3(0, 0, 1));
     cloudLight.rgb = 1 - exp(cloudLight.rgb * -cloudExposure);
+    cloudLight *= lerp(2, 1, cloudDensity);
     
     // Combine the scattered light with the sample color, allowing for dynamic colorations and opacities to the final result.
     return cloudLight * sampleColor;
