@@ -6,6 +6,7 @@ float cloudDensity;
 float horizontalOffset;
 float cloudFadeHeightTop;
 float cloudFadeHeightBottom;
+float cloudExposure;
 float2 parallax;
 float2 screenSize;
 float2 worldPosition;
@@ -151,7 +152,7 @@ float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD
     
     // Calculate how much scattered light will end up in the current fragment.
     float4 cloudLight = CalculateScatteredLight(float3(position.xy, -1), float3(0, 0, 1));
-    cloudLight.rgb = 1 - exp(cloudLight.rgb * -1.3);
+    cloudLight.rgb = 1 - exp(cloudLight.rgb * -cloudExposure);
     
     // Combine the scattered light with the sample color, allowing for dynamic colorations and opacities to the final result.
     return cloudLight * sampleColor;

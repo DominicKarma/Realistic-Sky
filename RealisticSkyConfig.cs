@@ -29,6 +29,16 @@ namespace RealisticSky
         /// </summary>
         public const float MaxSunlightExposure = 3f;
 
+        /// <summary>
+        /// The minimum exposure coefficient for clouds.
+        /// </summary>
+        public const float MinCloudExposure = -2f;
+
+        /// <summary>
+        /// The maximum exposure coefficient for clouds.
+        /// </summary>
+        public const float MaxCloudExposure = 2f;
+
         public override ConfigScope Mode => ConfigScope.ClientSide;
 
         [BackgroundColor(44, 54, 128, 192)]
@@ -86,6 +96,15 @@ namespace RealisticSky
         [BackgroundColor(44, 54, 128, 192)]
         [DefaultValue(true)]
         public bool RealisticClouds
+        {
+            get;
+            set;
+        }
+
+        [BackgroundColor(44, 54, 128, 192)]
+        [DefaultValue(0f)]
+        [Range(MinCloudExposure, MaxCloudExposure)]
+        public float CloudExposure
         {
             get;
             set;

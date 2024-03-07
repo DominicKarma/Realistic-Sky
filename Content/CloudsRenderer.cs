@@ -70,6 +70,7 @@ namespace RealisticSky.Content
             SkyPlayerSnapshot player = SkyPlayerSnapshot.TakeSnapshot();
             float dayCycleCompletion = (float)(Main.time / (Main.dayTime ? Main.dayLength : Main.nightLength));
             float sunZPosition = -4f - MathF.Pow(MathF.Sin(MathHelper.Pi * dayCycleCompletion), 0.51f) * 95f;
+            float cloudExposure = Utils.Remap(RealisticSkyConfig.Instance.CloudExposure, RealisticSkyConfig.MinCloudExposure, RealisticSkyConfig.MaxCloudExposure, 0.5f, 1.5f) * 1.3f;
             Effect shader = GameShaders.Misc[CloudShaderKey].Shader;
             shader.Parameters["screenSize"]?.SetValue(screenSize);
             shader.Parameters["invertedGravity"]?.SetValue(player.InvertedGravity);
@@ -81,6 +82,7 @@ namespace RealisticSky.Content
             shader.Parameters["parallax"]?.SetValue(new Vector2(0.3f, 0.175f) * Main.caveParallax);
             shader.Parameters["cloudDensity"]?.SetValue(MathHelper.Clamp(cloudOpacity * 1.2f, 0f, 1f));
             shader.Parameters["horizontalOffset"]?.SetValue(CloudHorizontalOffset);
+            shader.Parameters["cloudExposure"]?.SetValue(cloudExposure);
             shader.CurrentTechnique.Passes[0].Apply();
 
             // Draw the clouds.
