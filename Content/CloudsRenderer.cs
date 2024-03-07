@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using RealisticSky.Common.DataStructures;
 using ReLogic.Content;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 
@@ -69,7 +70,7 @@ namespace RealisticSky.Content
             // Prepare the cloud shader.
             SkyPlayerSnapshot player = SkyPlayerSnapshot.TakeSnapshot();
             float dayCycleCompletion = (float)(Main.time / (Main.dayTime ? Main.dayLength : Main.nightLength));
-            float sunZPosition = -10f - MathF.Pow(MathF.Sin(MathHelper.Pi * dayCycleCompletion), 0.51f) * 395f;
+            float sunZPosition = -10f - MathF.Pow(MathF.Sin(MathHelper.Pi * dayCycleCompletion), 0.51f) * 495f;
             float cloudExposure = Utils.Remap(RealisticSkyConfig.Instance.CloudExposure, RealisticSkyConfig.MinCloudExposure, RealisticSkyConfig.MaxCloudExposure, 0.5f, 1.5f) * 1.3f;
             Effect shader = GameShaders.Misc[CloudShaderKey].Shader;
             shader.Parameters["screenSize"]?.SetValue(screenSize);
@@ -79,11 +80,18 @@ namespace RealisticSky.Content
             shader.Parameters["worldPosition"]?.SetValue(Main.screenPosition);
             shader.Parameters["cloudFadeHeightTop"]?.SetValue(3300f);
             shader.Parameters["cloudFadeHeightBottom"]?.SetValue(4400f);
+            shader.Parameters["cloudSurfaceFadeHeightTop"]?.SetValue((float)player.WorldSurface * 16f - player.MaxTilesY);
+            shader.Parameters["cloudSurfaceFadeHeightBottom"]?.SetValue((float)player.WorldSurface * 16f - player.MaxTilesY * 0.7f);
             shader.Parameters["parallax"]?.SetValue(new Vector2(0.3f, 0.175f) * Main.caveParallax);
             shader.Parameters["cloudDensity"]?.SetValue(MathHelper.Clamp(cloudOpacity * 1.2f, 0f, 1f));
             shader.Parameters["horizontalOffset"]?.SetValue(CloudHorizontalOffset);
             shader.Parameters["cloudExposure"]?.SetValue(cloudExposure);
+            shader.Parameters["pixelationFactor"]?.SetValue(4f);
             shader.CurrentTechnique.Passes[0].Apply();
+
+            // Supply the atmosphere data to the clouds shader.
+            Main.instance.GraphicsDevice.Textures[1] = !AtmosphereRenderer.AtmosphereTarget.IsReady ? TextureAssets.MagicPixel.Value : AtmosphereRenderer.AtmosphereTarget.GetTarget();
+            Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearClamp;
 
             // Draw the clouds.
             Texture2D cloud = CloudTextureAsset.Value;

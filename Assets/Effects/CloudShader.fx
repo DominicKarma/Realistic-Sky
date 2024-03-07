@@ -1,4 +1,5 @@
 sampler baseTexture : register(s0);
+sampler atmosphereTexture : register(s1);
 
 bool invertedGravity;
 float globalTime;
@@ -6,7 +7,10 @@ float cloudDensity;
 float horizontalOffset;
 float cloudFadeHeightTop;
 float cloudFadeHeightBottom;
+float cloudSurfaceFadeHeightTop;
+float cloudSurfaceFadeHeightBottom;
 float cloudExposure;
+float pixelationFactor;
 float2 parallax;
 float2 screenSize;
 float2 worldPosition;
@@ -32,6 +36,9 @@ float2 GetRayBoxIntersectionOffsets(float3 rayOrigin, float3 rayDirection, float
 // Density corresponds to how compact one can expect the cloud to be at a given point.
 float CalculateCloudDensityAtPoint(float3 p)
 {
+    // Apply pixelation.
+    p = round(p / pixelationFactor) * pixelationFactor;
+    
     // Store the XY world position of this point for calculations later on.
     float2 localWorldPosition = p.xy + worldPosition;
     
@@ -63,8 +70,9 @@ float CalculateCloudDensityAtPoint(float3 p)
     // Add secondary cloud density values in accordance with the general cloud density shader parameter.
     density += densityData.g * cloudDensity - p.y * (0.1 - cloudDensity) * 0.5 - uvOffset * 5;
     
-    // Make the density taper off near the top of the world.
+    // Make the density taper off near the top of the world and near the surface.
     density *= smoothstep(cloudFadeHeightTop, cloudFadeHeightBottom, localWorldPosition.y - density * 100);
+    density *= smoothstep(cloudSurfaceFadeHeightBottom, cloudSurfaceFadeHeightTop, localWorldPosition.y + density * 300);
     
     // Combine things together.
     return density * cloudDensity * lerp(0.15, 0.9, cloudDensity);
@@ -146,6 +154,8 @@ float4 CalculateScatteredLight(float3 rayOrigin, float3 rayDirection)
 
 float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD0, float4 position : SV_Position) : COLOR0
 {
+    position.xy = round(position.xy / 0.25) * 0.25;
+    
     // Account for the pesky gravity potions...
     if (invertedGravity)
         position.y = screenSize.y - position.y;
@@ -153,7 +163,8 @@ float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD
     // Calculate how much scattered light will end up in the current fragment.
     float4 cloudLight = CalculateScatteredLight(float3(position.xy, -1), float3(0, 0, 1));
     cloudLight.rgb = 1 - exp(cloudLight.rgb * -cloudExposure);
-    cloudLight *= lerp(3, 1, cloudDensity);
+    cloudLight *= lerp(3.2, 1, cloudDensity);
+    cloudLight *= 1 + tex2D(atmosphereTexture, coords);
     
     // Combine the scattered light with the sample color, allowing for dynamic colorations and opacities to the final result.
     return cloudLight * sampleColor;
