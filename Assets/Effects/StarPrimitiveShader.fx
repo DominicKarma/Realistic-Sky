@@ -4,6 +4,7 @@ sampler atmosphereTexture : register(s2);
 float opacity;
 float glowIntensity;
 float globalTime;
+float distanceFadeoff;
 float2 sunPosition;
 float2 screenSize;
 matrix projection;
@@ -54,7 +55,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
     // Calculate the opacity, getting weaker near the sun and when behind the atmosphere.
     float distanceSqrFromSun = dot(position - sunPosition, position - sunPosition);
     float atmosphereInterpolant = dot(tex2D(atmosphereTexture, screenCoords).rgb, 0.333);
-    float localOpacity = saturate(opacity - smoothstep(57600, 21500, distanceSqrFromSun) - atmosphereInterpolant * 2.05);
+    float localOpacity = saturate(opacity - smoothstep(57600, 21500, distanceSqrFromSun / distanceFadeoff) - atmosphereInterpolant * 2.05);
     
     return (color + glow) * localOpacity;
 }

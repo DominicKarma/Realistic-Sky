@@ -135,8 +135,9 @@ namespace RealisticSky.Content
         public static void Render(float opacity, Matrix backgroundMatrix)
         {
             // Make vanilla's stars disappear. They are not needed.
-            for (int i = 0; i < Main.numStars; i++)
-                Main.star[i].hidden = true;
+            // Setting Main.star[i].hidden to true caused problems with Calamity's astral biome.
+            for (int i = 0; i < Main.maxStars; i++)
+                Main.star[i] = new();
 
             // Draw custom stars.
             float skyBrightness = (Main.ColorOfTheSkies.R + Main.ColorOfTheSkies.G + Main.ColorOfTheSkies.B) / 765f;
@@ -154,6 +155,7 @@ namespace RealisticSky.Content
             starShader.Parameters["projection"]?.SetValue(projection);
             starShader.Parameters["globalTime"]?.SetValue(Main.GlobalTimeWrappedHourly * 5f);
             starShader.Parameters["sunPosition"]?.SetValue(Main.dayTime ? SunPositionSaver.SunPosition : Vector2.One * 50000f);
+            starShader.Parameters["distanceFadeoff"]?.SetValue(Main.eclipse ? 0.11f : 1f);
             starShader.Parameters["screenSize"]?.SetValue(screenSize);
             starShader.CurrentTechnique.Passes[0].Apply();
 
