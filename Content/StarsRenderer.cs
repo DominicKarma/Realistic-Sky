@@ -65,18 +65,7 @@ namespace RealisticSky.Content
                 Color color = StarProfile.TemperatureToColor(profile.Temperature);
                 color.A = 0;
 
-                // Calculate the star's radius. These are harshly biased towards being tiny.
-                /*float radius = MathHelper.Lerp(2f, 4.3f, MathF.Pow(Main.rand.NextFloat(), 9f));
-                if (Main.rand.NextBool(30))
-                    radius *= 1.3f;
-
-                if (Main.rand.NextBool(50))
-                    radius *= 1.3f;
-
-                if (Main.rand.NextBool(50))
-                    radius *= 1.45f;*/
-                float radius = 3f * profile.Scale;
-
+                float radius = profile.Scale * 2.5f;
                 Stars[i] = new(xPositionRatio, yPositionRatio, color * MathF.Pow(radius / 6f, 1.5f), radius, Main.rand.NextFloat(MathHelper.TwoPi));
             }
 
