@@ -89,6 +89,10 @@ namespace RealisticSky.Content
 
         public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
+            // Safety check to ensure that the mod doesn't attempt to render anything when mods are unloading on the title screen.
+            if (RealisticSkyConfig.Instance is null)
+                return;
+
             // Prevent drawing beyond the back layer.
             if (maxDepth < float.MaxValue || minDepth >= float.MaxValue)
                 return;

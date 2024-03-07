@@ -33,6 +33,13 @@ namespace RealisticSky.Content
 
         public static void RenderToTarget()
         {
+            // Since this can render on the mod screen it's important that the shader be checked for if it's disposed or not.
+            if (!GameShaders.Misc.TryGetValue(AtmosphereShaderKey, out MiscShaderData s) || RealisticSkyConfig.Instance is null)
+                return;
+            Effect shader = s.Shader;
+            if (shader.IsDisposed)
+                return;
+
             SkyPlayerSnapshot player = SkyPlayerSnapshot.TakeSnapshot();
             float spaceInterpolant = RealisticSkyManager.SpaceHeightInterpolant;
 
@@ -55,7 +62,7 @@ namespace RealisticSky.Content
             // Prepare the sky shader.
             RealisticSkyConfig config = RealisticSkyConfig.Instance;
             Vector3 lightWavelengths = new(config.RedWavelength, config.GreenWavelength, config.BlueWavelength);
-            Effect shader = GameShaders.Misc[AtmosphereShaderKey].Shader;
+
             shader.Parameters["globalTime"]?.SetValue(Main.GlobalTimeWrappedHourly);
             shader.Parameters["atmosphereRadius"]?.SetValue(radius);
             shader.Parameters["planetRadius"]?.SetValue(radius * 0.8f);

@@ -150,8 +150,14 @@ namespace RealisticSky.Content
             Matrix projection = Matrix.CreateOrthographicOffCenter(0f, 1f, 1f, 0f, -100f, 100f);
             Vector2 screenSize = Vector2.Transform(new Vector2(Main.instance.GraphicsDevice.Viewport.Width, Main.instance.GraphicsDevice.Viewport.Height), backgroundMatrix);
 
+            // Since this can render on the mod screen it's important that the shader be checked for if it's disposed or not.
+            if (!GameShaders.Misc.TryGetValue(StarShaderKey, out MiscShaderData s))
+                return;
+            Effect starShader = s.Shader;
+            if (starShader.IsDisposed)
+                return;
+
             // Prepare the star shader.
-            Effect starShader = GameShaders.Misc[StarShaderKey].Shader;
             starShader.Parameters["opacity"]?.SetValue(starOpacity);
             starShader.Parameters["projection"]?.SetValue(projection);
             starShader.Parameters["globalTime"]?.SetValue(Main.GlobalTimeWrappedHourly * 5f);

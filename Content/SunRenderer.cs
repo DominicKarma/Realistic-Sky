@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Content;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -8,15 +9,25 @@ namespace RealisticSky.Content
 {
     public class SunRenderer : ModSystem
     {
+        internal static Asset<Texture2D> BloomAsset;
+
+        public override void OnModLoad()
+        {
+            BloomAsset = ModContent.Request<Texture2D>("RealisticSky/Assets/ExtraTextures/BloomCircle");
+        }
+
         public static void Render(float sunriseAndSetInterpolant)
         {
+            if (BloomAsset.IsDisposed)
+                return;
+
             // Make things stronger when in space, and weaker during sunrises and sunsets.
             float bloomOpacity = MathHelper.Lerp(1f, 0.5f, sunriseAndSetInterpolant);
             float spaceInterpolant = RealisticSkyManager.SpaceHeightInterpolant;
             float scaleFactor = (spaceInterpolant * 0.21f + 1f) * bloomOpacity;
             float pureWhiteInterpolant = MathF.Pow(spaceInterpolant, 2f);
             Vector2 sunPosition = SunPositionSaver.SunPosition;
-            Texture2D bloom = ModContent.Request<Texture2D>("RealisticSky/Assets/ExtraTextures/BloomCircle").Value;
+            Texture2D bloom = BloomAsset.Value;
 
             // Draw the innermost, bright yellow bloom.
             Main.spriteBatch.Draw(bloom, sunPosition, null, new Color(1f, 1f, 0.92f, 0f) * bloomOpacity, 0f, bloom.Size() * 0.5f, (MathF.Pow(scaleFactor, 1.5f) + pureWhiteInterpolant * 1.5f) * 0.9f, 0, 0f);
