@@ -77,7 +77,7 @@ namespace RealisticSky.Content
             shader.Parameters["sunPosition"]?.SetValue(new Vector3(Main.dayTime ? SunPositionSaver.SunPosition : SunPositionSaver.MoonPosition, sunZPosition));
             shader.Parameters["globalTime"]?.SetValue(Main.GlobalTimeWrappedHourly);
             shader.Parameters["worldPosition"]?.SetValue(Main.screenPosition);
-            shader.Parameters["cloudFadeHeightTop"]?.SetValue(3200f);
+            shader.Parameters["cloudFadeHeightTop"]?.SetValue(3300f);
             shader.Parameters["cloudFadeHeightBottom"]?.SetValue(4400f);
             shader.Parameters["parallax"]?.SetValue(new Vector2(0.3f, 0.175f) * Main.caveParallax);
             shader.Parameters["cloudDensity"]?.SetValue(MathHelper.Clamp(cloudOpacity * 1.2f, 0f, 1f));
