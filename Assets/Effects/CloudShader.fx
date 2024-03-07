@@ -141,7 +141,7 @@ float4 CalculateScatteredLight(float3 rayOrigin, float3 rayDirection)
     float cosTheta = dot(rayDirection, normalize(sunPosition - boxStart));
     float cosThetaSquared = cosTheta * cosTheta;
     float phaseMie = ((1 - gSquared) * (cosThetaSquared + 1)) / (pow(1 + gSquared - cosTheta * g * 2, 1.5) * (gSquared + 2)) * 0.1193662; // This constant is equal to 3/(8pi)
-    return light * inScatterStep * phaseMie * 800;
+    return light * inScatterStep * phaseMie * 320;
 }
 
 float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD0, float4 position : SV_Position) : COLOR0
@@ -153,7 +153,7 @@ float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD
     // Calculate how much scattered light will end up in the current fragment.
     float4 cloudLight = CalculateScatteredLight(float3(position.xy, -1), float3(0, 0, 1));
     cloudLight.rgb = 1 - exp(cloudLight.rgb * -cloudExposure);
-    cloudLight *= lerp(2, 1, cloudDensity);
+    cloudLight *= lerp(3, 1, cloudDensity);
     
     // Combine the scattered light with the sample color, allowing for dynamic colorations and opacities to the final result.
     return cloudLight * sampleColor;

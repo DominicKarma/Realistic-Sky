@@ -69,7 +69,7 @@ namespace RealisticSky.Content
             // Prepare the cloud shader.
             SkyPlayerSnapshot player = SkyPlayerSnapshot.TakeSnapshot();
             float dayCycleCompletion = (float)(Main.time / (Main.dayTime ? Main.dayLength : Main.nightLength));
-            float sunZPosition = -4f - MathF.Pow(MathF.Sin(MathHelper.Pi * dayCycleCompletion), 0.51f) * 95f;
+            float sunZPosition = -10f - MathF.Pow(MathF.Sin(MathHelper.Pi * dayCycleCompletion), 0.51f) * 395f;
             float cloudExposure = Utils.Remap(RealisticSkyConfig.Instance.CloudExposure, RealisticSkyConfig.MinCloudExposure, RealisticSkyConfig.MaxCloudExposure, 0.5f, 1.5f) * 1.3f;
             Effect shader = GameShaders.Misc[CloudShaderKey].Shader;
             shader.Parameters["screenSize"]?.SetValue(screenSize);
