@@ -6,6 +6,7 @@ float globalTime;
 float atmosphereRadius;
 float planetRadius;
 float screenHeight;
+float sunlightExposure;
 float3 sunPosition;
 float3 planetPosition;
 float3 rgbLightWavelengths;
@@ -125,7 +126,7 @@ float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD
     float4 atmosphereLight = CalculateScatteredLight(float3(position.xy, -atmosphereRadius - 5), float3(0, 0, 1));
     
     // Apply exponential tone-mapping. This neutralizes the overall colors and ensures that it takes more effort for super bright values to appear.
-    atmosphereLight.rgb = 1 - exp(-atmosphereLight.rgb);
+    atmosphereLight.rgb = 1 - exp(atmosphereLight.rgb * -sunlightExposure);
     
     // Combine the scattered light with the sample color, allowing for dynamic colorations and opacities to the final result.
     return atmosphereLight * sampleColor;

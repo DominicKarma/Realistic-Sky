@@ -19,6 +19,16 @@ namespace RealisticSky
         /// </summary>
         public const float MaxWavelength = 1100f;
 
+        /// <summary>
+        /// The minimum exposure coefficient for sunlight.
+        /// </summary>
+        public const float MinSunlightExposure = -3f;
+
+        /// <summary>
+        /// The maximum exposure coefficient for sunlight.
+        /// </summary>
+        public const float MaxSunlightExposure = 3f;
+
         public override ConfigScope Mode => ConfigScope.ClientSide;
 
         [BackgroundColor(44, 54, 128, 192)]
@@ -51,6 +61,15 @@ namespace RealisticSky
         [DefaultValue(420f)]
         [Range(MinWavelength, MaxWavelength)]
         public float BlueWavelength
+        {
+            get;
+            set;
+        }
+
+        [BackgroundColor(44, 54, 128, 192)]
+        [DefaultValue(0f)]
+        [Range(MinSunlightExposure, MaxSunlightExposure)]
+        public float SunlightExposure
         {
             get;
             set;

@@ -21,5 +21,10 @@ Configs: {
 			Label: Blue Wavelength
 			Tooltip: The wavelength of blue light, in nanometers, according to the atmosphere effect.
 		}
+
+		SunlightExposure: {
+			Label: Sunlight Exposure
+			Tooltip: The general intensity of sunlight for the atmosphere effect.
+		}
 	}
 }

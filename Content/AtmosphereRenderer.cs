@@ -47,6 +47,9 @@ namespace RealisticSky.Content
             float baseSkyBrightness = (Main.ColorOfTheSkies.R + Main.ColorOfTheSkies.G + Main.ColorOfTheSkies.B) / 765f;
             float specialSkyOpacity = Utils.GetLerpValue(0.08f, 0.2f, baseSkyBrightness + spaceInterpolant * 0.4f, true) * MathHelper.Lerp(1f, 0.5f, surfaceInterpolant) * Utils.Remap(baseSkyBrightness, 0.078f, 0.16f, 0.9f, 1f);
 
+            // Calculate the exponential sunlight exposure coefficient.
+            float sunlightExposure = Utils.Remap(RealisticSkyConfig.Instance.SunlightExposure, RealisticSkyConfig.MinSunlightExposure, RealisticSkyConfig.MaxSunlightExposure, 0.4f, 1.6f);
+
             // Prepare the sky shader.
             RealisticSkyConfig config = RealisticSkyConfig.Instance;
             Vector3 lightWavelengths = new(config.RedWavelength, config.GreenWavelength, config.BlueWavelength);
@@ -60,6 +63,7 @@ namespace RealisticSky.Content
             shader.Parameters["sunPosition"]?.SetValue(new Vector3(SunPositionSaver.SunPosition - Vector2.UnitY * Main.sunModY * RealisticSkyManager.SpaceHeightInterpolant, -500f));
             shader.Parameters["planetPosition"]?.SetValue(new Vector3(screenSize.X * 0.4f, radius + yOffset, 0f));
             shader.Parameters["rgbLightWavelengths"]?.SetValue(lightWavelengths);
+            shader.Parameters["sunlightExposure"]?.SetValue(sunlightExposure);
             shader.CurrentTechnique.Passes[0].Apply();
 
             // Draw the atmosphere.
