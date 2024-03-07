@@ -112,6 +112,11 @@ namespace RealisticSky.Content
                 SunRenderer.Render(1f - SunlightIntensityByTime);
             }
 
+            // Draw clouds.
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null, backgroundMatrix);
+            CloudsRenderer.Render();
+
             // Return to standard drawing.
             Main.spriteBatch.End();
             Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, Main.Rasterizer, null, backgroundMatrix);
