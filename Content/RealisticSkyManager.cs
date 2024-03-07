@@ -135,7 +135,6 @@ namespace RealisticSky.Content
 
         // Ensure that cloud opacities are not disturbed by this sky effect.
         public override float GetCloudAlpha() => 1f;
-
         #endregion Boilerplate
     }
 }
