@@ -82,12 +82,5 @@ namespace RealisticSky
             get;
             set;
         }
-
-        public override void OnChanged()
-        {
-            base.OnChanged();
-
-            ModContent.GetInstance<RealisticSky>().UpdateInMainMenu(ShowInMainMenu);
-        }
     }
 }
