@@ -93,12 +93,18 @@ namespace RealisticSky.Content
             Main.instance.GraphicsDevice.Textures[1] = !AtmosphereRenderer.AtmosphereTarget.IsReady ? TextureAssets.MagicPixel.Value : AtmosphereRenderer.AtmosphereTarget.GetTarget();
             Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearClamp;
 
+            // Calculate the sunset glow interpolant.
+            // This will give colors an orange tint.
+            float sunsetGlowInterpolant = MathF.Sqrt(1f - RealisticSkyManager.SunlightIntensityByTime);
+            if (!Main.dayTime)
+                sunsetGlowInterpolant = 0f;
+
             // Draw the clouds.
             Texture2D cloud = CloudTextureAsset.Value;
             Vector2 drawPosition = screenSize * 0.5f;
             Vector2 skyScale = screenSize / cloud.Size();
             Color cloudsColor = Color.Lerp(Main.ColorOfTheSkies, Color.White, 0.05f) * MathF.Pow(cloudOpacity, 0.67f) * 2.67f;
-            cloudsColor = Color.Lerp(cloudsColor, Color.OrangeRed, Main.dayTime ? 1f - RealisticSkyManager.SunlightIntensityByTime : 0f);
+            cloudsColor = Color.Lerp(cloudsColor, Color.OrangeRed, sunsetGlowInterpolant);
             cloudsColor.A = (byte)(cloudOpacity * 255f);
             Main.spriteBatch.Draw(cloud, drawPosition, null, cloudsColor, 0f, cloud.Size() * 0.5f, skyScale, 0, 0f);
         }
