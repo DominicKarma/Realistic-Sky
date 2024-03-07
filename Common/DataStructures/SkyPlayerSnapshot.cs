@@ -14,16 +14,25 @@ namespace RealisticSky.Common.DataStructures
 
         public bool InvertedGravity { get; }
 
+        public double WorldSurface { get; }
+
+        public int MaxTilesY { get; }
+
         public SkyPlayerSnapshot(Player player)
         {
             Center = player.Center;
             InvertedGravity = player.gravDir <= -1f;
+            WorldSurface = Main.worldSurface;
+            MaxTilesY = Main.maxTilesY;
         }
 
         public SkyPlayerSnapshot()
         {
-            Center = new Vector2(0f, 0f);
+            // Magic numbers from testing in-game. Feel free to adjust.
+            Center = new Vector2(33500f, 1500f);
             InvertedGravity = false;
+            WorldSurface = 337;
+            MaxTilesY = 1200;
         }
 
         public static SkyPlayerSnapshot TakeSnapshot()
