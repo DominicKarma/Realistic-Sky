@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using RealisticSky.Common.DataStructures;
 using ReLogic.Content;
 using Terraria;
 using Terraria.Graphics.Shaders;
@@ -41,15 +42,18 @@ namespace RealisticSky.Content
         public static void Render()
         {
             // Disable normal clouds.
+            Main.cloudBGAlpha = 0f;
             for (int i = 0; i < Main.maxClouds; i++)
                 Main.cloud[i].active = false;
+
+            // Calculate the cloud opacity, capping it at 1.
             float cloudOpacity = MathF.Min((Main.numCloudsTemp + 60) / (float)Main.maxClouds, Main.cloudAlpha);
             if (cloudOpacity > 1f)
                 cloudOpacity = 1f;
+
+            // If the cloud opacity is 0 or less, that means that there's nothing to draw and this method should terminate immediately for performance reasons.
             if (cloudOpacity <= 0f)
                 return;
-
-            Main.cloudBGAlpha = 0f;
 
             // Calculate the true screen size.
             Vector2 screenSize = new(Main.instance.GraphicsDevice.Viewport.Width, Main.instance.GraphicsDevice.Viewport.Height);
@@ -59,11 +63,12 @@ namespace RealisticSky.Content
                 CloudHorizontalOffset -= Main.windSpeedCurrent * (float)Main.dayRate * 0.0017f;
 
             // Prepare the sky shader.
+            SkyPlayerSnapshot player = SkyPlayerSnapshot.TakeSnapshot();
             float dayCycleCompletion = (float)(Main.time / (Main.dayTime ? Main.dayLength : Main.nightLength));
             float sunZPosition = -4f - MathF.Pow(MathF.Sin(MathHelper.Pi * dayCycleCompletion), 0.51f) * 95f;
             Effect shader = GameShaders.Misc[CloudShaderKey].Shader;
             shader.Parameters["screenSize"]?.SetValue(screenSize);
-            shader.Parameters["invertedGravity"]?.SetValue(Main.LocalPlayer.gravDir == -1f);
+            shader.Parameters["invertedGravity"]?.SetValue(player.InvertedGravity);
             shader.Parameters["sunPosition"]?.SetValue(new Vector3(Main.dayTime ? SunPositionSaver.SunPosition : SunPositionSaver.MoonPosition, sunZPosition));
             shader.Parameters["globalTime"]?.SetValue(Main.GlobalTimeWrappedHourly);
             shader.Parameters["worldPosition"]?.SetValue(Main.screenPosition);
@@ -72,14 +77,13 @@ namespace RealisticSky.Content
             shader.Parameters["horizontalOffset"]?.SetValue(CloudHorizontalOffset);
             shader.CurrentTechnique.Passes[0].Apply();
 
-            // Draw the atmosphere.
+            // Draw the clouds.
             Texture2D cloud = CloudTextureAsset.Value;
             Vector2 drawPosition = screenSize * 0.5f;
             Vector2 skyScale = screenSize / cloud.Size();
             Color cloudsColor = Color.Lerp(Main.ColorOfTheSkies, Color.White, 0.05f) * MathF.Pow(cloudOpacity, 0.67f) * 2.67f;
             cloudsColor.A = (byte)(cloudOpacity * 255f);
             cloudsColor = Color.White;
-
             Main.spriteBatch.Draw(cloud, drawPosition, null, cloudsColor, 0f, cloud.Size() * 0.5f, skyScale, 0, 0f);
         }
     }
