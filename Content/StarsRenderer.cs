@@ -129,8 +129,16 @@ namespace RealisticSky.Content
         {
             // Make vanilla's stars disappear. They are not needed.
             // Setting Main.star[i].hidden to true caused problems with Calamity's astral biome.
+            // This only applies if the player is on the surface so that the shimmer stars are not interfered with.
+            // TODO -- Consider making custom stars for the Aether?
+            SkyPlayerSnapshot player = SkyPlayerSnapshot.TakeSnapshot();
             for (int i = 0; i < Main.maxStars; i++)
-                Main.star[i] = new();
+            {
+                if (Main.star[i] is null)
+                    continue;
+
+                Main.star[i].hidden = player.Center.Y <= player.WorldSurface * 16f;
+            }
 
             // Draw custom stars.
             float skyBrightness = (Main.ColorOfTheSkies.R + Main.ColorOfTheSkies.G + Main.ColorOfTheSkies.B) / 765f;
