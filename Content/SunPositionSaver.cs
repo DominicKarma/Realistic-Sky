@@ -43,6 +43,10 @@ namespace RealisticSky.Content
             int sunPositionIndex = 0;
             int moonPositionIndex = 0;
             ILCursor cursor = new(context);
+
+            // Bias the sun and moon.
+            cursor.EmitDelegate(VerticallyBiasSunAndMoon);
+
             if (!cursor.TryGotoNext(i => i.MatchLdsfld<Main>("sunModY")))
             {
                 Mod.Logger.Error("The Main.sunModY load could not be found.");
@@ -71,6 +75,19 @@ namespace RealisticSky.Content
 
             cursor.Emit(OpCodes.Ldloc, moonPositionIndex);
             cursor.EmitDelegate<Action<Vector2>>(moonPosition => MoonPosition = moonPosition);
+        }
+
+        public static void VerticallyBiasSunAndMoon()
+        {
+            // Let the sun and moon positions return to normal on the title screen.
+            if (Main.gameMenu)
+                return;
+
+            // Make the sunset and sunrise positions more natural.
+            float dayCompletion = (float)(Main.time / Main.dayLength);
+            float nightCompletion = (float)(Main.time / Main.nightLength);
+            Main.sunModY = (short)((1f - MathF.Sin(dayCompletion * MathHelper.Pi)) * 640f);
+            Main.moonModY = (short)(MathF.Sin(nightCompletion * MathHelper.Pi) * -220f + 200f);
         }
     }
 }

@@ -1,5 +1,4 @@
 sampler baseTexture : register(s0);
-sampler planetTexture : register(s1);
 
 bool invertedGravity;
 bool performanceMode;
@@ -79,7 +78,8 @@ float4 CalculateScatteredLight(float3 rayOrigin, float3 rayDirection)
     
     // Start the in-scatter sample position at the edge of the sphere.
     // This process attempts to discretely model the integral used along the ray in real-world atmospheric scattering calculations.
-    float3 inScatterSamplePosition = rayOrigin + intersectionDistances.x * rayDirection;
+    float3 sphereStart = rayOrigin + intersectionDistances.x * rayDirection;
+    float3 inScatterSamplePosition = sphereStart;
     for (int i = 0; i < inScatterPoints; i++)
     {
         // Calculate the direction from the in-scatter point to the sun.
@@ -108,8 +108,8 @@ float4 CalculateScatteredLight(float3 rayOrigin, float3 rayDirection)
     }
     
     // Calculate the Rayleigh scattering phase value for the given ray between it and the sun.
-    float cosTheta = dot(normalize(sunPosition - rayOrigin), rayDirection);
-    float rayleighPhase = (cosTheta * cosTheta + 1.0) * 0.0596831; // This constant is 3/(16pi).
+    float cosTheta = dot(normalize(sunPosition - sphereStart), rayDirection);
+    float rayleighPhase = (cosTheta * cosTheta + 1) * 0.0596831; // This constant is 3/(16pi).
     
     // Combine the light with the scattering coefficients.
     return float4(light * scatteringCoefficients * rayleighPhase * inScatterStep * 15.1, 0);

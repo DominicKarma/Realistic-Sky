@@ -57,8 +57,8 @@ namespace RealisticSky.Content
             shader.Parameters["invertedGravity"]?.SetValue(Main.LocalPlayer.gravDir == -1f);
             shader.Parameters["performanceMode"]?.SetValue(RealisticSkyConfig.Instance.PerformanceMode);
             shader.Parameters["screenHeight"]?.SetValue(screenSize.Y);
-            shader.Parameters["sunPosition"]?.SetValue(new Vector3(SunPositionSaver.SunPosition, -50f));
-            shader.Parameters["planetPosition"]?.SetValue(new Vector2(screenSize.X * 0.4f, radius + yOffset));
+            shader.Parameters["sunPosition"]?.SetValue(new Vector3(SunPositionSaver.SunPosition - Vector2.UnitY * Main.sunModY * RealisticSkyManager.SpaceHeightInterpolant, -500f));
+            shader.Parameters["planetPosition"]?.SetValue(new Vector3(screenSize.X * 0.4f, radius + yOffset, 0f));
             shader.Parameters["rgbLightWavelengths"]?.SetValue(lightWavelengths);
             shader.CurrentTechnique.Passes[0].Apply();
 
