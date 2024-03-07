@@ -2,6 +2,11 @@ Configs: {
 	RealisticSkyConfig: {
 		DisplayName: Realistic Sky Config
 
+		ShowInMainMenu: {
+			Label: Show in Main Menu
+			Tooltip: Whether the realistic sky should be displayed in the main menu.
+		}
+
 		PerformanceMode: {
 			Label: Performance Mode
 			Tooltip: Whether sky quality should be sacrificed in favor of performance.

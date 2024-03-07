@@ -32,6 +32,14 @@ namespace RealisticSky
         public override ConfigScope Mode => ConfigScope.ClientSide;
 
         [BackgroundColor(44, 54, 128, 192)]
+        [DefaultValue(true)]
+        public bool ShowInMainMenu
+        {
+            get;
+            set;
+        }
+
+        [BackgroundColor(44, 54, 128, 192)]
         [DefaultValue(false)]
         public bool PerformanceMode
         {

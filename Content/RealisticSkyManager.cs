@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using RealisticSky.Common.DataStructures;
 using Terraria;
 using Terraria.Graphics.Effects;
 
@@ -77,7 +78,8 @@ namespace RealisticSky.Content
         {
             get
             {
-                float worldYInterpolant = Main.LocalPlayer.Center.Y / Main.maxTilesY / 16f;
+                SkyPlayerSnapshot player = SkyPlayerSnapshot.TakeSnapshot();
+                float worldYInterpolant = player.Center.Y / player.MaxTilesY / 16f;
                 float spaceInterpolant = Utils.GetLerpValue(SpaceYRatioStart, SpaceYRatioEnd, worldYInterpolant, true);
 
                 // Apply a smoothstep function to the space interpolant, since that helps make the transitions more natural.
@@ -117,9 +119,6 @@ namespace RealisticSky.Content
 
         public override void Update(GameTime gameTime)
         {
-            if (Main.gameMenu)
-                skyActive = false;
-
             // Increase or decrease the opacity of this sky based on whether it's active or not, stopping at 0-1 bounds.
             Opacity = MathHelper.Clamp(Opacity + skyActive.ToDirectionInt() * 0.1f, 0f, 1f);
         }
