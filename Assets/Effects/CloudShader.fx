@@ -85,7 +85,6 @@ float CalculateOpticalDepth(float3 rayOrigin, float3 rayDirection, float rayLeng
     return opticalDepth;
 }
 
-// Credit to Sebastian Lague's atmospheric rendering shader for much of this (as well as his video on the subject for explaining the concepts excellently).
 float4 CalculateScatteredLight(float3 rayOrigin, float3 rayDirection)
 {
     float3 boxMin = float3(-999999, -999999, 0);
