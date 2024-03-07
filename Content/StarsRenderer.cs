@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using RealisticSky.Common.DataStructures;
 using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
@@ -60,15 +61,12 @@ namespace RealisticSky.Content
                 float xPositionRatio = Main.rand.NextFloat(-0.05f, 1.05f);
                 float yPositionRatio = MathHelper.Lerp(-0.05f, 1f, MathF.Pow(Main.rand.NextFloat(), 1.5f));
 
-                // Calculate the star color.
-                Color color = Color.Lerp(Color.Wheat, Color.LightGoldenrodYellow, Main.rand.NextFloat());
-                if (Main.rand.NextBool(10))
-                    color = Color.Lerp(color, Color.Cyan, Main.rand.NextFloat(0.67f));
-
+                StarProfile profile = new(Main.rand);
+                Color color = StarProfile.TemperatureToColor(profile.Temperature);
                 color.A = 0;
 
                 // Calculate the star's radius. These are harshly biased towards being tiny.
-                float radius = MathHelper.Lerp(2f, 4.3f, MathF.Pow(Main.rand.NextFloat(), 9f));
+                /*float radius = MathHelper.Lerp(2f, 4.3f, MathF.Pow(Main.rand.NextFloat(), 9f));
                 if (Main.rand.NextBool(30))
                     radius *= 1.3f;
 
@@ -76,7 +74,8 @@ namespace RealisticSky.Content
                     radius *= 1.3f;
 
                 if (Main.rand.NextBool(50))
-                    radius *= 1.45f;
+                    radius *= 1.45f;*/
+                float radius = 3f * profile.Scale;
 
                 Stars[i] = new(xPositionRatio, yPositionRatio, color * MathF.Pow(radius / 6f, 1.5f), radius, Main.rand.NextFloat(MathHelper.TwoPi));
             }
