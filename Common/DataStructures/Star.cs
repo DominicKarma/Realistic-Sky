@@ -10,27 +10,27 @@ namespace RealisticSky.Common.DataStructures
         /// <summary>
         /// How far, in a 0-1 ratio, this star should be horizontally positioned. 0 Means to the left edge of the screen, 1 means to the right edge.
         /// </summary>
-        public readonly float ScreenXPositionRatio;
+        public float ScreenXPositionRatio { get; }
 
         /// <summary>
         /// How far, in a 0-1 ratio, this star should be vertically positioned. 0 Means to the top of the screen, 1 means to the bottom.
         /// </summary>
-        public readonly float ScreenYPositionRatio;
+        public float ScreenYPositionRatio { get; }
 
         /// <summary>
         /// The radius of this star, in pixels.
         /// </summary>
-        public readonly float Radius;
+        public float Radius { get; }
 
         /// <summary>
         /// The twinkle phase shift of this star.
         /// </summary>
-        public readonly float TwinklePhaseShift;
+        public float TwinklePhaseShift { get; }
 
         /// <summary>
         /// The color of this star.
         /// </summary>
-        public readonly Color Color;
+        public Color Color { get; }
 
         [SuppressMessage("Style", "IDE0290:Use primary constructor")]
         public Star(float xRatio, float yRatio, Color color, float radius, float twinklePhaseShift)

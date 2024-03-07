@@ -64,19 +64,23 @@ namespace RealisticSky.Content
                 Color color = Color.Lerp(Color.Wheat, Color.LightGoldenrodYellow, Main.rand.NextFloat());
                 if (Main.rand.NextBool(10))
                     color = Color.Lerp(color, Color.Cyan, Main.rand.NextFloat(0.67f));
+
                 color.A = 0;
 
                 // Calculate the star's radius. These are harshly biased towards being tiny.
                 float radius = MathHelper.Lerp(2f, 4.3f, MathF.Pow(Main.rand.NextFloat(), 9f));
                 if (Main.rand.NextBool(30))
                     radius *= 1.3f;
+
                 if (Main.rand.NextBool(50))
                     radius *= 1.3f;
+
                 if (Main.rand.NextBool(50))
                     radius *= 1.45f;
 
                 Stars[i] = new(xPositionRatio, yPositionRatio, color * MathF.Pow(radius / 6f, 1.5f), radius, Main.rand.NextFloat(MathHelper.TwoPi));
             }
+
             Main.QueueMainThreadAction(RegenerateBuffers);
         }
 
@@ -129,6 +133,7 @@ namespace RealisticSky.Content
                 indices[bufferIndex + 4] = (short)(vertexIndex + 3);
                 indices[bufferIndex + 5] = vertexIndex;
             }
+
             StarIndexBuffer.SetData(indices);
         }
 

@@ -52,6 +52,7 @@ namespace RealisticSky.Content
                 Mod.Logger.Error("The Main.sunModY load could not be found.");
                 return;
             }
+
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchStloc(out sunPositionIndex)))
             {
                 Mod.Logger.Error("The sun position local variable storage could not be found.");
@@ -67,6 +68,7 @@ namespace RealisticSky.Content
                 Mod.Logger.Error("The Main.moonModY load could not be found.");
                 return;
             }
+
             if (!cursor.TryGotoNext(MoveType.After, i => i.MatchStloc(out moonPositionIndex)))
             {
                 Mod.Logger.Error("The moon position local variable storage could not be found.");
