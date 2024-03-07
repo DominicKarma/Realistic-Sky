@@ -41,6 +41,10 @@ namespace RealisticSky.Content
 
         public static void Render()
         {
+            // Don't do anything if the realistic clouds config is disabled.
+            if (!RealisticSkyConfig.Instance.RealisticClouds)
+                return;
+
             // Disable normal clouds.
             Main.cloudBGAlpha = 0f;
             for (int i = 0; i < Main.maxClouds; i++)

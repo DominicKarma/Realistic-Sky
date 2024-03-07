@@ -82,5 +82,13 @@ namespace RealisticSky
             get;
             set;
         }
+
+        [BackgroundColor(44, 54, 128, 192)]
+        [DefaultValue(true)]
+        public bool RealisticClouds
+        {
+            get;
+            set;
+        }
     }
 }

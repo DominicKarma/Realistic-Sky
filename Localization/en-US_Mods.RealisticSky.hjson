@@ -31,5 +31,10 @@ Configs: {
 			Label: Sunlight Exposure
 			Tooltip: The general intensity of sunlight for the atmosphere effect.
 		}
+
+		RealisticClouds: {
+			Label: Realistic Clouds
+			Tooltip: Whether realistic clouds should be displayed.
+		}
 	}
 }
