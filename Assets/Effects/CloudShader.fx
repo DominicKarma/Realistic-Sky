@@ -28,10 +28,8 @@ float2 GetRayBoxIntersectionOffsets(float3 rayOrigin, float3 rayDirection, float
     return float2(tNear, tFar);
 };
 
-// Density corresponds to how many particles one can expect at a given point.
-// Points further up into the atmosphere become less dense, as more and more particles float away and cease to be present.
-// Once past the hard limit of the atmosphere radius, the density is considered to henceforth be 0.
-float CalculateAtmosphereDensityAtPoint(float3 p)
+// Density corresponds to how compact one can expect the cloud to be at a given point.
+float CalculateCloudDensityAtPoint(float3 p)
 {
     // Store the XY world position of this point for calculations later on.
     float2 localWorldPosition = p.xy + worldPosition;
@@ -80,7 +78,7 @@ float CalculateOpticalDepth(float3 rayOrigin, float3 rayDirection, float rayLeng
 
     for (int i = 0; i < numOpticalDepthPoints; i++)
     {
-        float localDensity = CalculateAtmosphereDensityAtPoint(densitySamplePoint);
+        float localDensity = CalculateCloudDensityAtPoint(densitySamplePoint);
         opticalDepth += localDensity * stepSize;
         densitySamplePoint += rayDirection * stepSize;
     }
@@ -97,19 +95,19 @@ float4 CalculateScatteredLight(float3 rayOrigin, float3 rayDirection)
     float sunIntersectionPoints = 4;
     float2 intersectionDistances = GetRayBoxIntersectionOffsets(rayOrigin, rayDirection, boxMin, boxMax);
     
-    // Calculate how far the atmosphere intersection must travel.
+    // Calculate how far the cloud intersection must travel.
     // If no intersection happened, simply return 0;
-    float atmosphereIntersectionLength = intersectionDistances.y - intersectionDistances.x;
-    if (atmosphereIntersectionLength <= 0)
+    float cloudIntersectionLength = intersectionDistances.y - intersectionDistances.x;
+    if (cloudIntersectionLength <= 0)
         return 0;
     
     // Calculate how much each step along the in-scatter ray must travel.
-    float inScatterStep = atmosphereIntersectionLength / (inScatterPoints - 1);
+    float inScatterStep = cloudIntersectionLength / (inScatterPoints - 1);
     
     // Initialize the light accumulation value at 0.
     float4 light = 0;
     
-    // Start the in-scatter sample position at the edge of the sphere.
+    // Start the in-scatter sample position at the edge of the box.
     // This process attempts to discretely model the integral used along the ray in real-world atmospheric scattering calculations.
     float3 boxStart = rayOrigin + intersectionDistances.x * rayDirection;
     float3 inScatterSamplePosition = boxStart;
@@ -119,8 +117,8 @@ float4 CalculateScatteredLight(float3 rayOrigin, float3 rayDirection)
         float3 directionToSun = normalize(sunPosition - inScatterSamplePosition);
         
         // Perform a ray intersection from the sample position towards the sun.
-        // This does not need a safety "is there any intersection at all?" check since by definition the sample position is already in the sphere, since it's an intersection
-        // of a line in said sphere.
+        // This does not need a safety "is there any intersection at all?" check since by definition the sample position is already in the box, since it's an intersection
+        // of a line in said box.
         float2 sunRayLengthDistances = GetRayBoxIntersectionOffsets(inScatterSamplePosition, directionToSun, boxMin, boxMax);
         float sunIntersectionRayLength = sunRayLengthDistances.y - sunRayLengthDistances.x;
         
@@ -131,7 +129,7 @@ float4 CalculateScatteredLight(float3 rayOrigin, float3 rayDirection)
         float3 localScatteredLight = exp(-sunIntersectionOpticalDepth);
         
         // Combine the local scattered light, along with the density of the current position.
-        light += CalculateAtmosphereDensityAtPoint(inScatterSamplePosition) * float4(localScatteredLight, 1);
+        light += CalculateCloudDensityAtPoint(inScatterSamplePosition) * float4(localScatteredLight, 1);
         
         // Move onto the next movement iteration by stepping forward on the in-scatter position.
         inScatterSamplePosition += rayDirection * inScatterStep;
@@ -153,11 +151,11 @@ float4 PixelShaderFunction(float4 sampleColor : COLOR0, float2 coords : TEXCOORD
         position.y = screenSize.y - position.y;
     
     // Calculate how much scattered light will end up in the current fragment.
-    float4 atmosphereLight = CalculateScatteredLight(float3(position.xy, -1), float3(0, 0, 1));
-    atmosphereLight.rgb = 1 - exp(atmosphereLight.rgb * -1.3);
+    float4 cloudLight = CalculateScatteredLight(float3(position.xy, -1), float3(0, 0, 1));
+    cloudLight.rgb = 1 - exp(cloudLight.rgb * -1.3);
     
     // Combine the scattered light with the sample color, allowing for dynamic colorations and opacities to the final result.
-    return atmosphereLight * sampleColor;
+    return cloudLight * sampleColor;
 }
 
 technique Technique1

@@ -66,7 +66,7 @@ namespace RealisticSky.Content
             if (!Main.gamePaused)
                 CloudHorizontalOffset -= Main.windSpeedCurrent * (float)Main.dayRate * 0.0017f;
 
-            // Prepare the sky shader.
+            // Prepare the cloud shader.
             SkyPlayerSnapshot player = SkyPlayerSnapshot.TakeSnapshot();
             float dayCycleCompletion = (float)(Main.time / (Main.dayTime ? Main.dayLength : Main.nightLength));
             float sunZPosition = -4f - MathF.Pow(MathF.Sin(MathHelper.Pi * dayCycleCompletion), 0.51f) * 95f;
