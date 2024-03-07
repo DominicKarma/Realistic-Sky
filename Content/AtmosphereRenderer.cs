@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using RealisticSky.Common.DataStructures;
 using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
@@ -32,6 +33,7 @@ namespace RealisticSky.Content
 
         public static void RenderToTarget()
         {
+            SkyPlayerSnapshot player = SkyPlayerSnapshot.TakeSnapshot();
             float spaceInterpolant = RealisticSkyManager.SpaceHeightInterpolant;
 
             // Calculate the true screen size.
@@ -39,7 +41,7 @@ namespace RealisticSky.Content
 
             // Calculate opacity and brightness values based on a combination of how far in space the player is and what the general sky brightness is.
             float upperSurfaceRatioStart = (float)(Main.worldSurface / Main.maxTilesY) * 0.5f;
-            float worldYInterpolant = Main.LocalPlayer.Center.Y / Main.maxTilesY / 16f;
+            float worldYInterpolant = player.Center.Y / Main.maxTilesY / 16f;
             float surfaceInterpolant = Utils.GetLerpValue(RealisticSkyManager.SpaceYRatioStart, upperSurfaceRatioStart, worldYInterpolant, true);
 
             float radius = MathHelper.Lerp(17000f, 6400f, spaceInterpolant);
@@ -57,7 +59,7 @@ namespace RealisticSky.Content
             shader.Parameters["globalTime"]?.SetValue(Main.GlobalTimeWrappedHourly);
             shader.Parameters["atmosphereRadius"]?.SetValue(radius);
             shader.Parameters["planetRadius"]?.SetValue(radius * 0.8f);
-            shader.Parameters["invertedGravity"]?.SetValue(Main.LocalPlayer.gravDir == -1f);
+            shader.Parameters["invertedGravity"]?.SetValue(player.InvertedGravity);
             shader.Parameters["performanceMode"]?.SetValue(RealisticSkyConfig.Instance.PerformanceMode);
             shader.Parameters["screenHeight"]?.SetValue(screenSize.Y);
             shader.Parameters["sunPosition"]?.SetValue(new Vector3(SunPositionSaver.SunPosition - Vector2.UnitY * Main.sunModY * RealisticSkyManager.SpaceHeightInterpolant, -500f));

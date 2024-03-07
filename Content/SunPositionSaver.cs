@@ -82,8 +82,8 @@ namespace RealisticSky.Content
         public static void VerticallyBiasSunAndMoon()
         {
             // Let the sun and moon positions return to normal on the title screen.
-            if (Main.gameMenu)
-                return;
+            // if (Main.gameMenu)
+            //     return;
 
             // Make the sunset and sunrise positions more natural.
             float dayCompletion = (float)(Main.time / Main.dayLength);
