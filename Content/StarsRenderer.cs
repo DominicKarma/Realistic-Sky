@@ -142,7 +142,7 @@ namespace RealisticSky.Content
             Matrix projection = Matrix.CreateOrthographicOffCenter(-1f, 1f, height, -height, -1f, 0f);
 
             // Zoom in slightly on the stars, so that none of them exceed the bounds of the screen.
-            Matrix screenStretch = Matrix.CreateScale(1.1f, 1.1f, 1f);
+            Matrix screenStretch = Matrix.CreateScale(1.15f, 1.15f, 1f);
 
             // Combine matrices together.
             return rotation * projection * screenStretch;
