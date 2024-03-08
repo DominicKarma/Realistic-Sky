@@ -28,7 +28,7 @@ namespace RealisticSky.Common.DataStructures
 
         public StarProfile(UnifiedRandom random)
         {
-            float normal = random.NextFloat();
+            float normal = random.NextFloat(0.99999f);
             int segment = (int)(normal * (Segments.Length - 1));
             float t = (normal - segment / (float)(Segments.Length - 1)) * (Segments.Length - 1);
             Temperature = (int)MathHelper.Lerp(Segments[segment], Segments[segment + 1], t);
