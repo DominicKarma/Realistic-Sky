@@ -109,7 +109,7 @@ namespace RealisticSky.Content
             AtmosphereRenderer.RenderFromTarget();
 
             // Draw bloom over the sun.
-            if (!Main.eclipse && Main.dayTime)
+            if (Main.dayTime)
             {
                 Main.spriteBatch.End();
                 Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
