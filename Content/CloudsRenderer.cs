@@ -80,8 +80,8 @@ namespace RealisticSky.Content
             shader.Parameters["worldPosition"]?.SetValue(Main.screenPosition);
             shader.Parameters["cloudFadeHeightTop"]?.SetValue(3300f);
             shader.Parameters["cloudFadeHeightBottom"]?.SetValue(4400f);
-            shader.Parameters["cloudSurfaceFadeHeightTop"]?.SetValue((float)player.WorldSurface * 16f - player.MaxTilesY);
-            shader.Parameters["cloudSurfaceFadeHeightBottom"]?.SetValue((float)player.WorldSurface * 16f - player.MaxTilesY * 0.7f);
+            shader.Parameters["cloudSurfaceFadeHeightTop"]?.SetValue((float)player.WorldSurface * 16f - player.MaxTilesY * 0.25f);
+            shader.Parameters["cloudSurfaceFadeHeightBottom"]?.SetValue((float)player.WorldSurface * 16f);
             shader.Parameters["parallax"]?.SetValue(new Vector2(0.3f, 0.175f) * Main.caveParallax);
             shader.Parameters["cloudDensity"]?.SetValue(MathHelper.Clamp(cloudOpacity * 1.2f, 0f, 1f));
             shader.Parameters["horizontalOffset"]?.SetValue(CloudHorizontalOffset);
