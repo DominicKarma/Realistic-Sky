@@ -32,7 +32,7 @@ namespace RealisticSky.Common.DataStructures
             int segment = (int)(normal * (Segments.Length - 1));
             float t = (normal - segment / (float)(Segments.Length - 1)) * (Segments.Length - 1);
             Temperature = (int)MathHelper.Lerp(Segments[segment], Segments[segment + 1], t);
-            Scale = normal + 0.5f + MathHelper.Lerp(-0.2f, 0.68f, MathF.Pow(random.NextFloat(), 10.5f));
+            Scale = normal + MathHelper.Lerp(0.5f, 1.2f, MathF.Pow(random.NextFloat(), 10.5f));
         }
 
         public static Color TemperatureToColor(int temperature)

@@ -72,7 +72,7 @@ namespace RealisticSky.Content
 
                 float latitude = Main.rand.NextFloat(-MathHelper.PiOver2, MathHelper.PiOver2) * MathF.Sqrt(Main.rand.NextFloat());
                 float longitude = Main.rand.NextFloat(-MathHelper.Pi, MathHelper.Pi);
-                float radius = profile.Scale * 2.5f;
+                float radius = profile.Scale * 3.1f;
                 Stars[i] = new(latitude, longitude, color * MathF.Pow(radius / 6f, 1.5f), radius);
             }
 
@@ -96,7 +96,7 @@ namespace RealisticSky.Content
             for (int i = 0; i < Stars.Length; i++)
             {
                 // Acquire vertices for the star.
-                Stars[i].GenerateVertices(1.2f, out var topLeft, out var topRight, out var bottomLeft, out var bottomRight);
+                Stars[i].GenerateVertices(1f, out var topLeft, out var topRight, out var bottomLeft, out var bottomRight);
 
                 int bufferIndex = i * 4;
                 vertices[bufferIndex] = topLeft;
@@ -182,7 +182,7 @@ namespace RealisticSky.Content
             Vector2 screenSize = Vector2.Transform(new Vector2(Main.instance.GraphicsDevice.Viewport.Width, Main.instance.GraphicsDevice.Viewport.Height), backgroundMatrix);
             starShader.Parameters["opacity"]?.SetValue(starOpacity);
             starShader.Parameters["projection"]?.SetValue(CalculatePerspectiveMatrix());
-            starShader.Parameters["globalTime"]?.SetValue(Main.GlobalTimeWrappedHourly * 5f);
+            starShader.Parameters["globalTime"]?.SetValue(Main.GlobalTimeWrappedHourly * 0.9f);
             starShader.Parameters["sunPosition"]?.SetValue(Main.dayTime ? SunPositionSaver.SunPosition : Vector2.One * 50000f);
             starShader.Parameters["minTwinkleBrightness"]?.SetValue(MinTwinkleBrightness);
             starShader.Parameters["maxTwinkleBrightness"]?.SetValue(MaxTwinkleBrightness);
