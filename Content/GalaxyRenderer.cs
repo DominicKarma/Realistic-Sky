@@ -69,8 +69,8 @@ namespace RealisticSky.Content
             Vector2 screenSize = new(Main.instance.GraphicsDevice.Viewport.Width, Main.instance.GraphicsDevice.Viewport.Height);
             float galaxyScale = screenSize.X / galaxy.Width * 0.95f;
             Color galaxyColor = new Color(1f, 1f, 1f) * MovingGalaxyOpacity;
-            Vector2 galaxyDrawPosition = screenSize * 0.5f;
-            Main.spriteBatch.Draw(galaxy, galaxyDrawPosition, null, galaxyColor, RealisticSkyManager.StarViewRotation + 0.23f, galaxy.Size() * 0.5f, galaxyScale, 0, 0f);
+            Vector2 galaxyDrawPosition = screenSize * new Vector2(0.6f, 0.6f);
+            Main.spriteBatch.Draw(galaxy, galaxyDrawPosition, null, galaxyColor, RealisticSkyManager.StarViewRotation * 0.84f + 0.23f, galaxy.Size() * 0.5f, galaxyScale, 0, 0f);
         }
     }
 }
