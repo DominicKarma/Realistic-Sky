@@ -134,10 +134,17 @@ namespace RealisticSky.Content
 
         internal static Matrix CalculatePerspectiveMatrix()
         {
-            float height = Main.instance.GraphicsDevice.Viewport.Height / (float)Main.instance.GraphicsDevice.Viewport.Width;
+            // Rotate stars as time passes in the world.
             Matrix rotation = Matrix.CreateRotationZ(DaysCounterSystem.DayCounter * -2.3f);
+
+            // Project the stars onto the screen.
+            float height = Main.instance.GraphicsDevice.Viewport.Height / (float)Main.instance.GraphicsDevice.Viewport.Width;
             Matrix projection = Matrix.CreateOrthographicOffCenter(-1f, 1f, height, -height, -1f, 0f);
+
+            // Zoom in slightly on the stars, so that none of them exceed the bounds of the screen.
             Matrix screenStretch = Matrix.CreateScale(1.1f, 1.1f, 1f);
+
+            // Combine matrices together.
             return rotation * projection * screenStretch;
         }
 
