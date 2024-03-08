@@ -96,6 +96,7 @@ namespace RealisticSky.Content
             // Calculate the sunset glow interpolant.
             // This will give colors an orange tint.
             float sunsetGlowInterpolant = MathF.Sqrt(1f - RealisticSkyManager.SunlightIntensityByTime);
+            sunsetGlowInterpolant *= Utils.GetLerpValue(1f, 0.7f, sunsetGlowInterpolant, true);
             if (!Main.dayTime)
                 sunsetGlowInterpolant = 0f;
 
