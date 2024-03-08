@@ -34,11 +34,23 @@ namespace RealisticSky.Content
 
         internal static void UpdateOpacity()
         {
-            float idealGlaxayOpacityInterpolant = Utils.GetLerpValue(2500f, 8000f, RealisticSkyConfig.Instance.NightSkyStarCount, true) * Utils.GetLerpValue(0.1f, 0.05f, RealisticSkyManager.SkyBrightness, true);
+            // Calculate interpolants that go into the overall desired galaxy opacity.
+            // These interpolants and their reasonings are the following:
+            // 1. The amount of stars in the scene. Basically all panoramic photography of the Milky Way that I could find was littered with tiny stars. It would be really strange for all those stars to appear at full intensity
+            // when there are few stars in the sky otherwise.
+            // 2. The darkness of the sky. In the real world, the Milky Way is only visible on the darkest, most light-pollution-free nights. This is modeled here by requiring a super dark sky brightness to appear.
+            // 3. The Y position of the camera. This results in the galaxy's opacity being weak near the edge of the planet's atmosphere, since that counts as a form of light.
+            float starInterpolant = Utils.GetLerpValue(1000f, 5000f, RealisticSkyConfig.Instance.NightSkyStarCount, true);
+            float skyDarknessInterpolant = Utils.GetLerpValue(0.1f, 0.05f, RealisticSkyManager.SkyBrightness, true);
+            float spaceHeightInterpolant = RealisticSkyManager.SpaceHeightInterpolant;
+            float proximityToAtmosphereEdgeInterpolant = spaceHeightInterpolant * Utils.GetLerpValue(0.95f, 0.81f, spaceHeightInterpolant, true);
+
+            // Combine the aforementioned interpolants together into a single desired opacity value.
+            float idealGlaxayOpacityInterpolant = starInterpolant * skyDarknessInterpolant;
             float idealGalaxyOpacity = MathHelper.SmoothStep(0f, 0.7f, idealGlaxayOpacityInterpolant);
 
             // Make the galaxy harder to see in space, since in the space the atmosphere noticeably creates light.
-            idealGalaxyOpacity *= MathHelper.SmoothStep(1f, 0.25f, RealisticSkyManager.SpaceHeightInterpolant * Utils.GetLerpValue(0.95f, 0.81f, RealisticSkyManager.SpaceHeightInterpolant, true));
+            idealGalaxyOpacity *= MathHelper.SmoothStep(1f, 0.25f, proximityToAtmosphereEdgeInterpolant);
 
             // Update the moving opacity.
             MovingGalaxyOpacity = MathHelper.Lerp(MovingGalaxyOpacity, idealGalaxyOpacity, GalaxyOpacityMoveSpeedInterpolant);
