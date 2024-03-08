@@ -1,4 +1,10 @@
-Adds a cool effect to the base background sky so that the atmosphere and its light scattering is more noticeably realistic.
+Adds various cool visuals to the skies and backgrounds of the game, including the following:
+
+- An atmosphere that scatters light similar to in the real world.
+- More realistic, lighting-affected clouds.
+- A replacement to the night sky's stars.
+- A more vibrant sun that becomes noticeably brighter in space.
+- A more vibrant solar eclipse.
 
 Please report any bugs/issues at the following repository: https://github.com/DominicKarma/Realistic-Sky
 Include log files when making reports. These are typically located in Documents/My Games/Terraria/tModLoader/Logs.
