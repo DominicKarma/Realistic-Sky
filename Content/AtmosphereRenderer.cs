@@ -47,14 +47,14 @@ namespace RealisticSky.Content
             Vector2 screenSize = new(Main.instance.GraphicsDevice.Viewport.Width, Main.instance.GraphicsDevice.Viewport.Height);
 
             // Calculate opacity and brightness values based on a combination of how far in space the player is and what the general sky brightness is.
-            float upperSurfaceRatioStart = (float)(player.WorldSurface / player.MaxTilesY) * 0.5f;
             float worldYInterpolant = player.Center.Y / player.MaxTilesY / 16f;
+            float upperSurfaceRatioStart = (float)(player.WorldSurface / player.MaxTilesY) * 0.5f;
             float surfaceInterpolant = Utils.GetLerpValue(RealisticSkyManager.SpaceYRatioStart, upperSurfaceRatioStart, worldYInterpolant, true);
 
             float radius = MathHelper.Lerp(17000f, 6400f, spaceInterpolant);
             float yOffset = (spaceInterpolant * 600f + 250f) * screenSize.Y / 1440f;
             float baseSkyBrightness = (Main.ColorOfTheSkies.R + Main.ColorOfTheSkies.G + Main.ColorOfTheSkies.B) / 765f;
-            float specialSkyOpacity = Utils.GetLerpValue(0.08f, 0.2f, baseSkyBrightness + spaceInterpolant * 0.4f, true) * MathHelper.Lerp(1f, 0.5f, surfaceInterpolant) * Utils.Remap(baseSkyBrightness, 0.078f, 0.16f, 0.9f, 1f);
+            float atmosphereOpacity = Utils.GetLerpValue(0.08f, 0.2f, baseSkyBrightness + spaceInterpolant * 0.4f, true) * MathHelper.Lerp(1f, 0.5f, surfaceInterpolant) * Utils.Remap(baseSkyBrightness, 0.078f, 0.16f, 0.9f, 1f);
 
             // Calculate the exponential sunlight exposure coefficient.
             float sunlightExposure = Utils.Remap(RealisticSkyConfig.Instance.SunlightExposure, RealisticSkyConfig.MinSunlightExposure, RealisticSkyConfig.MaxSunlightExposure, 0.4f, 1.6f);
@@ -79,7 +79,7 @@ namespace RealisticSky.Content
             Texture2D pixel = TextureAssets.MagicPixel.Value;
             Vector2 drawPosition = screenSize * 0.5f;
             Vector2 skyScale = screenSize / pixel.Size();
-            Main.spriteBatch.Draw(pixel, drawPosition, null, Color.White * specialSkyOpacity, 0f, pixel.Size() * 0.5f, skyScale, 0, 0f);
+            Main.spriteBatch.Draw(pixel, drawPosition, null, Color.White * atmosphereOpacity, 0f, pixel.Size() * 0.5f, skyScale, 0, 0f);
         }
 
         public static void RenderFromTarget()

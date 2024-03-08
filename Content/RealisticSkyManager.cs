@@ -87,6 +87,11 @@ namespace RealisticSky.Content
             }
         }
 
+        /// <summary>
+        /// The rotation of the star scene as a result of gradual planetary rotation.
+        /// </summary>
+        public static float StarViewRotation => DaysCounterSystem.DayCounter * -2.3f;
+
         public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
             // Safety check to ensure that the mod doesn't attempt to render anything when mods are unloading on the title screen.
@@ -102,7 +107,13 @@ namespace RealisticSky.Content
             Vector3 translationDirection = new(1f, Main.BackgroundViewMatrix.Effects.HasFlag(SpriteEffects.FlipVertically) ? -1f : 1f, 1f);
             backgroundMatrix.Translation -= Main.BackgroundViewMatrix.ZoomMatrix.Translation * translationDirection;
 
-            // Draw stars.
+            // Draw stars and the galaxy.
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Additive, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null, backgroundMatrix);
+            GalaxyRenderer.Render();
+
+            Main.spriteBatch.End();
+            Main.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null, backgroundMatrix);
             StarsRenderer.Render(Opacity, backgroundMatrix);
 
             // Draw the atmosphere.

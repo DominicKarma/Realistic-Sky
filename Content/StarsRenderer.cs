@@ -135,7 +135,7 @@ namespace RealisticSky.Content
         internal static Matrix CalculatePerspectiveMatrix()
         {
             // Rotate stars as time passes in the world.
-            Matrix rotation = Matrix.CreateRotationZ(DaysCounterSystem.DayCounter * -2.3f);
+            Matrix rotation = Matrix.CreateRotationZ(RealisticSkyManager.StarViewRotation);
 
             // Project the stars onto the screen.
             float height = Main.instance.GraphicsDevice.Viewport.Height / (float)Main.instance.GraphicsDevice.Viewport.Width;
