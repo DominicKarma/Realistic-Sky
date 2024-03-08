@@ -47,6 +47,11 @@ namespace RealisticSky.Content
         public const float SpaceYRatioEnd = 0.024f;
 
         /// <summary>
+        /// The brightness of the sky, calculated from the average of the RGB components in <see cref="Main.ColorOfTheSkies"/>.
+        /// </summary>
+        public static float SkyBrightness => (Main.ColorOfTheSkies.R + Main.ColorOfTheSkies.G + Main.ColorOfTheSkies.B) / 765f;
+
+        /// <summary>
         /// The intensity of light based on dawn or dusk as a 0-1 ratio.
         /// </summary>
         public static float SunlightIntensityByTime

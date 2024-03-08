@@ -53,7 +53,7 @@ namespace RealisticSky.Content
 
             float radius = MathHelper.Lerp(17000f, 6400f, spaceInterpolant);
             float yOffset = (spaceInterpolant * 600f + 250f) * screenSize.Y / 1440f;
-            float baseSkyBrightness = (Main.ColorOfTheSkies.R + Main.ColorOfTheSkies.G + Main.ColorOfTheSkies.B) / 765f;
+            float baseSkyBrightness = RealisticSkyManager.SkyBrightness;
             float atmosphereOpacity = Utils.GetLerpValue(0.08f, 0.2f, baseSkyBrightness + spaceInterpolant * 0.4f, true) * MathHelper.Lerp(1f, 0.5f, surfaceInterpolant) * Utils.Remap(baseSkyBrightness, 0.078f, 0.16f, 0.9f, 1f);
 
             // Calculate the exponential sunlight exposure coefficient.

@@ -34,8 +34,7 @@ namespace RealisticSky.Content
 
         internal static void UpdateOpacity()
         {
-            float skyBrightness = (Main.ColorOfTheSkies.R + Main.ColorOfTheSkies.G + Main.ColorOfTheSkies.B) / 765f;
-            float idealGlaxayOpacityInterpolant = Utils.GetLerpValue(2500f, 8000f, RealisticSkyConfig.Instance.NightSkyStarCount, true) * Utils.GetLerpValue(0.1f, 0.05f, skyBrightness, true);
+            float idealGlaxayOpacityInterpolant = Utils.GetLerpValue(2500f, 8000f, RealisticSkyConfig.Instance.NightSkyStarCount, true) * Utils.GetLerpValue(0.1f, 0.05f, RealisticSkyManager.SkyBrightness, true);
             float idealGalaxyOpacity = MathHelper.SmoothStep(0f, 0.7f, idealGlaxayOpacityInterpolant);
 
             // Make the galaxy harder to see in space, since in the space the atmosphere noticeably creates light.

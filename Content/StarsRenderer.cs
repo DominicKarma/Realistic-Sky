@@ -163,8 +163,7 @@ namespace RealisticSky.Content
             }
 
             // Calculate the star opacity. If it's zero, don't waste resources rendering anything.
-            float skyBrightness = (Main.ColorOfTheSkies.R + Main.ColorOfTheSkies.G + Main.ColorOfTheSkies.B) / 765f;
-            float starOpacity = MathHelper.Clamp(MathF.Pow(1f - Main.atmo, 3f) + MathF.Pow(1f - skyBrightness, 5f), 0f, 1f) * opacity;
+            float starOpacity = MathHelper.Clamp(MathF.Pow(1f - Main.atmo, 3f) + MathF.Pow(1f - RealisticSkyManager.SkyBrightness, 5f), 0f, 1f) * opacity;
             if (starOpacity <= 0f)
                 return;
 
