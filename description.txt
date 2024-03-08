@@ -6,5 +6,7 @@ Adds various cool visuals to the skies and backgrounds of the game, including th
 - A more vibrant sun that becomes noticeably brighter in space.
 - A more vibrant solar eclipse.
 
+Most settings can in some capacity be tweaked via configuration, be it for preference or performance reasons.
+
 Please report any bugs/issues at the following repository: https://github.com/DominicKarma/Realistic-Sky
 Include log files when making reports. These are typically located in Documents/My Games/Terraria/tModLoader/Logs.
