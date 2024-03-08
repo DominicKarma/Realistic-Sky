@@ -121,7 +121,7 @@ namespace RealisticSky
         [BackgroundColor(44, 54, 128, 192)]
         [DefaultValue(16000)]
         [Range(0, MaxStarCount)]
-        [Slider()]
+        [Slider]
         public int NightSkyStarCount
         {
             get => nightSkyStarCount;
