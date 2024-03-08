@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using RealisticSky.Content;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Config;
 
@@ -7,6 +8,8 @@ namespace RealisticSky
     [BackgroundColor(86, 109, 154, 216)]
     public class RealisticSkyConfig : ModConfig
     {
+        private int nightSkyStarCount;
+
         public static RealisticSkyConfig Instance => ModContent.GetInstance<RealisticSkyConfig>();
 
         /// <summary>
@@ -38,6 +41,11 @@ namespace RealisticSky
         /// The maximum exposure coefficient for clouds.
         /// </summary>
         public const float MaxCloudExposure = 2f;
+
+        /// <summary>
+        /// The maximum amount of stars that can exist in the night sky.
+        /// </summary>
+        public const int MaxStarCount = 100000;
 
         public override ConfigScope Mode => ConfigScope.ClientSide;
 
@@ -108,6 +116,23 @@ namespace RealisticSky
         {
             get;
             set;
+        }
+
+        [BackgroundColor(44, 54, 128, 192)]
+        [DefaultValue(16000)]
+        [Range(0, MaxStarCount)]
+        [Slider()]
+        public int NightSkyStarCount
+        {
+            get => nightSkyStarCount;
+            set
+            {
+                if (nightSkyStarCount != value)
+                {
+                    StarsRenderer.GenerateStars(value);
+                    nightSkyStarCount = value;
+                }
+            }
         }
     }
 }

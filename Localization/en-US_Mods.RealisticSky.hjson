@@ -41,5 +41,10 @@ Configs: {
 			Label: Cloud Exposure
 			Tooltip: The general intensity of light passing through clouds.
 		}
+
+		NightSkyStarCount: {
+			Label: Night Sky Star Count
+			Tooltip: The amount of stars that should exist in the night sky.
+		}
 	}
 }

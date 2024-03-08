@@ -35,11 +35,6 @@ namespace RealisticSky.Content
         internal static BasicEffect StarShader;
 
         /// <summary>
-        /// The amount of stars to draw in the sky.
-        /// </summary>
-        public const int StarCount = 33000;
-
-        /// <summary>
         /// The minimum brightness that a star can be at as a result of twinkling.
         /// </summary>
         public const float MinTwinkleBrightness = 0.2f;
@@ -60,12 +55,15 @@ namespace RealisticSky.Content
             GameShaders.Misc[StarShaderKey] = new MiscShaderData(new(ModContent.Request<Effect>("RealisticSky/Assets/Effects/StarPrimitiveShader", AssetRequestMode.ImmediateLoad).Value), "AutoloadPass");
 
             // Generate stars.
-            GenerateStars(StarCount);
+            GenerateStars(RealisticSkyConfig.Instance.NightSkyStarCount);
         }
 
         internal static void GenerateStars(int starCount)
         {
             Stars = new SpecialStar[starCount];
+            if (starCount <= 0)
+                return;
+
             for (int i = 0; i < Stars.Length; i++)
             {
                 StarProfile profile = new(Main.rand);
@@ -157,7 +155,7 @@ namespace RealisticSky.Content
                 Main.star[i].hidden = player.Center.Y <= player.WorldSurface * 16f && !CalamityModCompatibility.InAstralBiome(Main.LocalPlayer);
             }
 
-            // Calculate the star opacity. If it's zero, don't waste resources drawing anything.
+            // Calculate the star opacity. If it's zero, don't waste resources rendering anything.
             float skyBrightness = (Main.ColorOfTheSkies.R + Main.ColorOfTheSkies.G + Main.ColorOfTheSkies.B) / 765f;
             float starOpacity = MathHelper.Clamp(MathF.Pow(1f - Main.atmo, 3f) + MathF.Pow(1f - skyBrightness, 5f), 0f, 1f) * opacity;
             if (starOpacity <= 0f)
@@ -168,6 +166,10 @@ namespace RealisticSky.Content
                 return;
             Effect starShader = s.Shader;
             if (starShader.IsDisposed)
+                return;
+
+            // Don't waste resources rendering anything if there are no stars to draw.
+            if (RealisticSkyConfig.Instance.NightSkyStarCount <= 0)
                 return;
 
             // Prepare the star shader.
