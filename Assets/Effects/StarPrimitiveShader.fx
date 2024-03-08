@@ -5,6 +5,8 @@ float opacity;
 float glowIntensity;
 float globalTime;
 float distanceFadeoff;
+float minTwinkleBrightness;
+float maxTwinkleBrightness;
 float2 sunPosition;
 float2 screenSize;
 matrix projection;
@@ -49,7 +51,7 @@ float4 PixelShaderFunction(VertexShaderOutput input) : COLOR0
     // Add an inner glow to the texture with a twinkle.
     float2 centerOffset = coords - 0.5;
     float distanceSqrFromCenter = dot(centerOffset, centerOffset);
-    float twinkle = lerp(0.2, 1.87, cos(globalTime + color.b * 125 + color.r * 120) * 0.5 + 0.5);
+    float twinkle = lerp(minTwinkleBrightness, maxTwinkleBrightness, cos(globalTime + color.b * 125 + color.r * 120) * 0.5 + 0.5);
     float glow = (color.r + color.b) * twinkle / (distanceSqrFromCenter * 4 + 2);
     
     // Calculate the opacity, getting weaker near the sun and when behind the atmosphere.

@@ -37,7 +37,17 @@ namespace RealisticSky.Content
         /// <summary>
         /// The amount of stars to draw in the sky.
         /// </summary>
-        public const int StarCount = 16000;
+        public const int StarCount = 33000;
+
+        /// <summary>
+        /// The minimum brightness that a star can be at as a result of twinkling.
+        /// </summary>
+        public const float MinTwinkleBrightness = 0.2f;
+
+        /// <summary>
+        /// The maximum brightness that a star can be at as a result of twinkling.
+        /// </summary>
+        public const float MaxTwinkleBrightness = 3.37f;
 
         /// <summary>
         /// The identifier key for the sky's star shader.
@@ -58,16 +68,14 @@ namespace RealisticSky.Content
             Stars = new SpecialStar[starCount];
             for (int i = 0; i < Stars.Length; i++)
             {
-                // Calculate the position of the star on the screen. The Y position is biased a bit towards the top by making the random interpolant generally favor being closer to 0.
-                float xPositionRatio = Main.rand.NextFloat(-0.05f, 1.05f);
-                float yPositionRatio = MathHelper.Lerp(-0.05f, 1f, MathF.Pow(Main.rand.NextFloat(), 1.5f));
-
                 StarProfile profile = new(Main.rand);
                 Color color = StarProfile.TemperatureToColor(profile.Temperature);
                 color.A = 0;
 
+                float latitude = Main.rand.NextFloat(-MathHelper.PiOver2, MathHelper.PiOver2) * MathF.Sqrt(Main.rand.NextFloat());
+                float longitude = Main.rand.NextFloat(-MathHelper.Pi, MathHelper.Pi);
                 float radius = profile.Scale * 2.5f;
-                Stars[i] = new(xPositionRatio, yPositionRatio, color * MathF.Pow(radius / 6f, 1.5f), radius, Main.rand.NextFloat(MathHelper.TwoPi));
+                Stars[i] = new(latitude, longitude, color * MathF.Pow(radius / 6f, 1.5f), radius);
             }
 
             Main.QueueMainThreadAction(RegenerateBuffers);
@@ -90,7 +98,7 @@ namespace RealisticSky.Content
             for (int i = 0; i < Stars.Length; i++)
             {
                 // Acquire vertices for the star.
-                Stars[i].GenerateVertices(1f, out var topLeft, out var topRight, out var bottomLeft, out var bottomRight);
+                Stars[i].GenerateVertices(1.2f, out var topLeft, out var topRight, out var bottomLeft, out var bottomRight);
 
                 int bufferIndex = i * 4;
                 vertices[bufferIndex] = topLeft;
@@ -126,6 +134,15 @@ namespace RealisticSky.Content
             StarIndexBuffer.SetData(indices);
         }
 
+        internal static Matrix CalculatePerspectiveMatrix()
+        {
+            float height = Main.instance.GraphicsDevice.Viewport.Height / (float)Main.instance.GraphicsDevice.Viewport.Width;
+            Matrix rotation = Matrix.CreateRotationZ(DaysCounterSystem.DayCounter * -2.3f);
+            Matrix projection = Matrix.CreateOrthographicOffCenter(-1f, 1f, height, -height, -1f, 0f);
+            Matrix screenStretch = Matrix.CreateScale(1.1f, 1.1f, 1f);
+            return rotation * projection * screenStretch;
+        }
+
         public static void Render(float opacity, Matrix backgroundMatrix)
         {
             // Make vanilla's stars disappear. They are not needed.
@@ -140,15 +157,11 @@ namespace RealisticSky.Content
                 Main.star[i].hidden = player.Center.Y <= player.WorldSurface * 16f && !CalamityModCompatibility.InAstralBiome(Main.LocalPlayer);
             }
 
-            // Draw custom stars.
+            // Calculate the star opacity. If it's zero, don't waste resources drawing anything.
             float skyBrightness = (Main.ColorOfTheSkies.R + Main.ColorOfTheSkies.G + Main.ColorOfTheSkies.B) / 765f;
             float starOpacity = MathHelper.Clamp(MathF.Pow(1f - Main.atmo, 3f) + MathF.Pow(1f - skyBrightness, 5f), 0f, 1f) * opacity;
             if (starOpacity <= 0f)
                 return;
-
-            // Calculate the star matrix.
-            Matrix projection = Matrix.CreateOrthographicOffCenter(0f, 1f, 1f, 0f, -100f, 100f);
-            Vector2 screenSize = Vector2.Transform(new Vector2(Main.instance.GraphicsDevice.Viewport.Width, Main.instance.GraphicsDevice.Viewport.Height), backgroundMatrix);
 
             // Since this can render on the mod screen it's important that the shader be checked for if it's disposed or not.
             if (!GameShaders.Misc.TryGetValue(StarShaderKey, out MiscShaderData s))
@@ -158,10 +171,13 @@ namespace RealisticSky.Content
                 return;
 
             // Prepare the star shader.
+            Vector2 screenSize = Vector2.Transform(new Vector2(Main.instance.GraphicsDevice.Viewport.Width, Main.instance.GraphicsDevice.Viewport.Height), backgroundMatrix);
             starShader.Parameters["opacity"]?.SetValue(starOpacity);
-            starShader.Parameters["projection"]?.SetValue(projection);
+            starShader.Parameters["projection"]?.SetValue(CalculatePerspectiveMatrix());
             starShader.Parameters["globalTime"]?.SetValue(Main.GlobalTimeWrappedHourly * 5f);
             starShader.Parameters["sunPosition"]?.SetValue(Main.dayTime ? SunPositionSaver.SunPosition : Vector2.One * 50000f);
+            starShader.Parameters["minTwinkleBrightness"]?.SetValue(MinTwinkleBrightness);
+            starShader.Parameters["maxTwinkleBrightness"]?.SetValue(MaxTwinkleBrightness);
             starShader.Parameters["distanceFadeoff"]?.SetValue(Main.eclipse ? 0.11f : 1f);
             starShader.Parameters["screenSize"]?.SetValue(screenSize);
             starShader.CurrentTechnique.Passes[0].Apply();
