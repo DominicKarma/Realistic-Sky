@@ -113,19 +113,19 @@ namespace RealisticSky.Content
         {
             // Initialize the star buffer if necessary.
             StarIndexBuffer?.Dispose();
-            StarIndexBuffer = new(Main.instance.GraphicsDevice, IndexElementSize.SixteenBits, Stars.Length * 6, BufferUsage.WriteOnly);
+            StarIndexBuffer = new(Main.instance.GraphicsDevice, IndexElementSize.ThirtyTwoBits, Stars.Length * 6, BufferUsage.WriteOnly);
 
             // Generate index data.
-            short[] indices = new short[Stars.Length * 6];
+            int[] indices = new int[Stars.Length * 6];
             for (int i = 0; i < Stars.Length; i++)
             {
                 int bufferIndex = i * 6;
-                short vertexIndex = (short)(i * 4);
+                int vertexIndex = i * 4;
                 indices[bufferIndex] = vertexIndex;
-                indices[bufferIndex + 1] = (short)(vertexIndex + 1);
-                indices[bufferIndex + 2] = (short)(vertexIndex + 2);
-                indices[bufferIndex + 3] = (short)(vertexIndex + 2);
-                indices[bufferIndex + 4] = (short)(vertexIndex + 3);
+                indices[bufferIndex + 1] = vertexIndex + 1;
+                indices[bufferIndex + 2] = vertexIndex + 2;
+                indices[bufferIndex + 3] = vertexIndex + 2;
+                indices[bufferIndex + 4] = vertexIndex + 3;
                 indices[bufferIndex + 5] = vertexIndex;
             }
 
