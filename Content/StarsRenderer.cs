@@ -141,7 +141,7 @@ namespace RealisticSky.Content
             float height = Main.instance.GraphicsDevice.Viewport.Height / (float)Main.instance.GraphicsDevice.Viewport.Width;
             Matrix projection = Matrix.CreateOrthographicOffCenter(-1f, 1f, height, -height, -1f, 0f);
 
-            // Zoom in slightly on the stars, so that none of them exceed the bounds of the screen.
+            // Zoom in slightly on the stars, so that the sphere does not abruptly end at the bounds of the screen.
             Matrix screenStretch = Matrix.CreateScale(1.15f, 1.15f, 1f);
 
             // Combine matrices together.
