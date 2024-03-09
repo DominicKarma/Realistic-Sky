@@ -8,8 +8,6 @@ namespace RealisticSky
     [BackgroundColor(86, 109, 154, 216)]
     public class RealisticSkyConfig : ModConfig
     {
-        private int nightSkyStarCount;
-
         public static RealisticSkyConfig Instance => ModContent.GetInstance<RealisticSkyConfig>();
 
         /// <summary>
@@ -124,15 +122,8 @@ namespace RealisticSky
         [Slider]
         public int NightSkyStarCount
         {
-            get => nightSkyStarCount;
-            set
-            {
-                if (nightSkyStarCount != value)
-                {
-                    StarsRenderer.GenerateStars(value);
-                    nightSkyStarCount = value;
-                }
-            }
+            get;
+            set;
         }
 
         [BackgroundColor(44, 54, 128, 192)]
@@ -141,6 +132,11 @@ namespace RealisticSky
         {
             get;
             set;
+        }
+
+        public override void OnChanged()
+        {
+            StarsRenderer.GenerateStars(NightSkyStarCount);
         }
     }
 }
