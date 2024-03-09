@@ -68,6 +68,9 @@ namespace RealisticSky.Content.Clouds
             float sunZPosition = -10f - MathF.Pow(MathF.Sin(MathHelper.Pi * dayCycleCompletion), 0.51f) * 495f;
             float cloudExposure = Utils.Remap(RealisticSkyConfig.Instance.CloudExposure, RealisticSkyConfig.MinCloudExposure, RealisticSkyConfig.MaxCloudExposure, 0.5f, 1.5f) * 1.3f;
             Effect shader = GameShaders.Misc[CloudShaderKey].Shader;
+            if (shader.IsDisposed)
+                return;
+
             shader.Parameters["screenSize"]?.SetValue(screenSize);
             shader.Parameters["invertedGravity"]?.SetValue(player.InvertedGravity);
             shader.Parameters["sunPosition"]?.SetValue(new Vector3(Main.dayTime ? SunPositionSaver.SunPosition : SunPositionSaver.MoonPosition, sunZPosition));
