@@ -45,7 +45,7 @@ namespace RealisticSky.Content
                 Main.cloud[i].active = false;
 
             // Calculate the cloud opacity, capping it at 1.
-            float cloudOpacity = MathF.Min((Main.numCloudsTemp + 60) / (float)Main.maxClouds, Main.cloudAlpha);
+            float cloudOpacity = MathF.Max((Main.numCloudsTemp - 20) / (float)Main.maxClouds, Main.cloudAlpha);
             if (cloudOpacity > 1f)
                 cloudOpacity = 1f;
 
