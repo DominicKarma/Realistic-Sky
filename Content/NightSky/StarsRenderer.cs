@@ -63,7 +63,7 @@ namespace RealisticSky.Content.NightSky
 
         internal static void GenerateStars(int starCount, bool ignoreIfSameCount = true)
         {
-            if (ignoreIfSameCount && Stars is not null && Stars.Length == starCount)
+            if (ignoreIfSameCount && Stars?.Length == starCount)
                 return;
 
             Stars = new SpecialStar[starCount];
