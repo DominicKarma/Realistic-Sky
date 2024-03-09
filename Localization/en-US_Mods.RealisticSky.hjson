@@ -46,5 +46,10 @@ Configs: {
 			Label: Night Sky Star Count
 			Tooltip: The amount of stars that should exist in the night sky.
 		}
+
+		DisableEffectsDuringBossFights: {
+			Label: Disable Effects During Boss Fights
+			Tooltip: Whether realistic sky effects should be disabled during boss fights.
+		}
 	}
 }

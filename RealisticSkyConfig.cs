@@ -134,5 +134,13 @@ namespace RealisticSky
                 }
             }
         }
+
+        [BackgroundColor(44, 54, 128, 192)]
+        [DefaultValue(false)]
+        public bool DisableEffectsDuringBossFights
+        {
+            get;
+            set;
+        }
     }
 }

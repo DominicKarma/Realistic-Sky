@@ -9,7 +9,10 @@ namespace RealisticSky.Content
     {
         public override bool IsSceneEffectActive(Player player)
         {
-            // Make the effect not appear during boss fights.
+            // Make the effect not appear during boss fights if the config says so.
+            if (!RealisticSkyConfig.Instance.DisableEffectsDuringBossFights)
+                return true;
+
             for (int i = 0; i < Main.maxNPCs; i++)
             {
                 if (Main.npc[i] is null || !Main.npc[i].active)
