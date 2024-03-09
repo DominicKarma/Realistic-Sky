@@ -1,13 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using RealisticSky.Common.DataStructures;
+using RealisticSky.Content.Sun;
 using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 
-namespace RealisticSky.Content
+namespace RealisticSky.Content.Atmosphere
 {
     public class AtmosphereRenderer : ModSystem
     {

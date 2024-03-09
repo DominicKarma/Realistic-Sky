@@ -5,7 +5,7 @@ using MonoMod.Cil;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace RealisticSky.Content
+namespace RealisticSky.Content.Clouds
 {
     public class RainReplacementManager : ModSystem
     {

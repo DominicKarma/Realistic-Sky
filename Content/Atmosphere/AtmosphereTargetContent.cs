@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent;
 
-namespace RealisticSky.Content
+namespace RealisticSky.Content.Atmosphere
 {
     public class AtmosphereTargetContent : ARenderTargetContentByRequest
     {

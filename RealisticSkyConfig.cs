@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using RealisticSky.Content;
+using RealisticSky.Content.NightSky;
 using Terraria.ModLoader;
 using Terraria.ModLoader.Config;
 

@@ -1,6 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using RealisticSky.Common.DataStructures;
+using RealisticSky.Content.Atmosphere;
+using RealisticSky.Content.Clouds;
+using RealisticSky.Content.NightSky;
+using RealisticSky.Content.Sun;
 using Terraria;
 using Terraria.Graphics.Effects;
 

@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using RealisticSky.Assets;
 using RealisticSky.Common.DataStructures;
+using RealisticSky.Content.Atmosphere;
+using RealisticSky.Content.Sun;
 using RealisticSky.Core.CrossCompatibility.Inbound;
 using ReLogic.Content;
 using Terraria;
@@ -11,7 +13,7 @@ using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 using SpecialStar = RealisticSky.Common.DataStructures.Star;
 
-namespace RealisticSky.Content
+namespace RealisticSky.Content.NightSky
 {
     public class StarsRenderer : ModSystem
     {

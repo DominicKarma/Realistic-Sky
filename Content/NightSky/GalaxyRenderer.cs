@@ -5,7 +5,7 @@ using RealisticSky.Assets;
 using Terraria;
 using Terraria.ModLoader;
 
-namespace RealisticSky.Content
+namespace RealisticSky.Content.NightSky
 {
     public class GalaxyRenderer : ModSystem
     {
