@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
+using RealisticSky.Assets;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -9,10 +9,6 @@ namespace RealisticSky.Content
 {
     public class GalaxyRenderer : ModSystem
     {
-        internal static Asset<Texture2D> BigBloomAsset;
-
-        internal static Asset<Texture2D> GalaxyAsset;
-
         /// <summary>
         ///     The moving opacity of the galaxy.
         /// </summary>
@@ -29,12 +25,6 @@ namespace RealisticSky.Content
         ///     The intensity at which the galaxy changes its opacity every frame.
         /// </summary>
         public const float GalaxyOpacityMoveSpeedInterpolant = 0.14f;
-
-        public override void OnModLoad()
-        {
-            BigBloomAsset = ModContent.Request<Texture2D>("RealisticSky/Assets/ExtraTextures/BloomCircleBig");
-            GalaxyAsset = ModContent.Request<Texture2D>("RealisticSky/Assets/ExtraTextures/Galaxy");
-        }
 
         internal static void UpdateOpacity()
         {
@@ -62,21 +52,21 @@ namespace RealisticSky.Content
 
         public static void Render()
         {
-            if (GalaxyAsset.IsDisposed)
+            if (TexturesRegistry.Galaxy.IsDisposed)
                 return;
 
             // Update the galaxy's opacity.
             UpdateOpacity();
 
             // Calculate draw variables.
-            Texture2D galaxy = GalaxyAsset.Value;
+            Texture2D galaxy = TexturesRegistry.Galaxy.Value;
             Vector2 screenSize = new(Main.instance.GraphicsDevice.Viewport.Width, Main.instance.GraphicsDevice.Viewport.Height);
             float galaxyScale = screenSize.X / galaxy.Width * 0.95f;
             Color galaxyColor = new Color(1.2f, 0.9f, 1f) * MovingGalaxyOpacity;
             Vector2 galaxyDrawPosition = screenSize * new Vector2(0.6f, 0.6f);
 
             // Draw a glow behind the galaxy.
-            Texture2D bloom = BigBloomAsset.Value;
+            Texture2D bloom = TexturesRegistry.BloomCircleBig.Value;
             Main.spriteBatch.Draw(bloom, galaxyDrawPosition, null, galaxyColor * MathF.Sqrt(MovingGalaxyOpacity) * 0.85f, 0f, bloom.Size() * 0.5f, galaxyScale * 0.29f, 0, 0f);
             Main.spriteBatch.Draw(bloom, galaxyDrawPosition, null, galaxyColor * MovingGalaxyOpacity * 0.5f, 0f, bloom.Size() * 0.5f, galaxyScale * 3f, 0, 0f);
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using ReLogic.Content;
+using RealisticSky.Assets;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -9,19 +9,9 @@ namespace RealisticSky.Content
 {
     public class SunRenderer : ModSystem
     {
-        internal static Asset<Texture2D> BloomAsset;
-
-        internal static Asset<Texture2D> EclipseMoonAsset;
-
-        public override void OnModLoad()
-        {
-            BloomAsset = ModContent.Request<Texture2D>("RealisticSky/Assets/ExtraTextures/BloomCircle");
-            EclipseMoonAsset = ModContent.Request<Texture2D>("RealisticSky/Assets/ExtraTextures/EclipseMoon");
-        }
-
         public static void Render(float sunriseAndSetInterpolant)
         {
-            if (BloomAsset.IsDisposed)
+            if (TexturesRegistry.BloomCircle.IsDisposed)
                 return;
 
             // Make things stronger when in space, and weaker during sunrises and sunsets.
@@ -31,7 +21,7 @@ namespace RealisticSky.Content
             float pureWhiteInterpolant = MathF.Pow(spaceInterpolant, 2f);
             float lensFlareOpacity = spaceInterpolant;
             Vector2 sunPosition = SunPositionSaver.SunPosition;
-            Texture2D bloom = BloomAsset.Value;
+            Texture2D bloom = TexturesRegistry.BloomCircle.Value;
 
             if (Main.eclipse)
             {
@@ -77,8 +67,11 @@ namespace RealisticSky.Content
 
         public static void DrawEclipseOverlay()
         {
-            Texture2D moon = EclipseMoonAsset.Value;
-            Texture2D bloom = BloomAsset.Value;
+            if (TexturesRegistry.BloomCircle.IsDisposed)
+                return;
+
+            Texture2D moon = TexturesRegistry.EclipseMoon.Value;
+            Texture2D bloom = TexturesRegistry.BloomCircle.Value;
             Vector2 sunPosition = SunPositionSaver.SunPosition;
             for (int i = 0; i < 2; i++)
                 Main.spriteBatch.Draw(bloom, sunPosition, null, new(1f, 1f, 1f, 0f), 0f, bloom.Size() * 0.5f, 1.3f, 0, 0f);

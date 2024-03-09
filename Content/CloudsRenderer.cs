@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using RealisticSky.Assets;
 using RealisticSky.Common.DataStructures;
 using ReLogic.Content;
 using Terraria;
@@ -22,21 +23,13 @@ namespace RealisticSky.Content
         }
 
         /// <summary>
-        /// The asset that holds the cloud texture.
-        /// </summary>
-        internal static Asset<Texture2D> CloudTextureAsset;
-
-        /// <summary>
         /// The identifier key for the sky's cloud shader.
         /// </summary>
         public const string CloudShaderKey = "RealisticSky:CloudShader";
 
         public override void OnModLoad()
         {
-            // Load the cloud texture.
-            CloudTextureAsset = ModContent.Request<Texture2D>("RealisticSky/Assets/ExtraTextures/CloudDensity");
-
-            // Store the atmosphere shader.
+            // Store the cloud shader.
             GameShaders.Misc[CloudShaderKey] = new MiscShaderData(new(ModContent.Request<Effect>("RealisticSky/Assets/Effects/CloudShader", AssetRequestMode.ImmediateLoad).Value), "AutoloadPass");
         }
 
@@ -101,7 +94,7 @@ namespace RealisticSky.Content
                 sunsetGlowInterpolant = 0f;
 
             // Draw the clouds.
-            Texture2D cloud = CloudTextureAsset.Value;
+            Texture2D cloud = TexturesRegistry.CloudDensityMap.Value;
             Vector2 drawPosition = screenSize * 0.5f;
             Vector2 skyScale = screenSize / cloud.Size();
             Color cloudsColor = Color.Lerp(Main.ColorOfTheSkies, Color.White, 0.05f) * MathF.Pow(cloudOpacity, 0.67f) * 2.67f;

@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using RealisticSky.Assets;
 using RealisticSky.Common.DataStructures;
 using RealisticSky.Core.CrossCompatibility.Inbound;
 using ReLogic.Content;
@@ -193,7 +194,7 @@ namespace RealisticSky.Content
             // Request the atmosphere target.
             AtmosphereRenderer.AtmosphereTarget.Request();
 
-            Main.instance.GraphicsDevice.Textures[1] = ModContent.Request<Texture2D>("RealisticSky/Assets/ExtraTextures/BloomCircle").Value;
+            Main.instance.GraphicsDevice.Textures[1] = TexturesRegistry.BloomCircle.Value;
             Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
             Main.instance.GraphicsDevice.Textures[2] = !AtmosphereRenderer.AtmosphereTarget.IsReady ? TextureAssets.MagicPixel.Value : AtmosphereRenderer.AtmosphereTarget.GetTarget();
             Main.instance.GraphicsDevice.SamplerStates[2] = SamplerState.LinearClamp;
