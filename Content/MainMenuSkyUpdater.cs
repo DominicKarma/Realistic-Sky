@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.Graphics.Effects;
 using Terraria.ModLoader;
@@ -23,9 +22,6 @@ namespace RealisticSky.Content
             readyToRender = true;
         }
 
-        // Mark this method as ignoreable by the debugger, since DoUpdate encompasses the entire game update loop.
-        // Any exceptions that arise during the calling of orig propagates the error up to this detour and catches the attention of the IDE's debugger, which is slightly annoying.
-        [DebuggerStepThrough]
         private void UpdateSky(On_Main.orig_DoUpdate orig, Main self, ref GameTime gameTime)
         {
             orig(self, ref gameTime);
