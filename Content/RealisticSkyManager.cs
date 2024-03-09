@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using RealisticSky.Common.DataStructures;
+using RealisticSky.Common.Utilities;
 using RealisticSky.Content.Atmosphere;
 using RealisticSky.Content.Clouds;
 using RealisticSky.Content.NightSky;
@@ -149,7 +150,7 @@ namespace RealisticSky.Content
         public override void Update(GameTime gameTime)
         {
             // Increase or decrease the opacity of this sky based on whether it's active or not, stopping at 0-1 bounds.
-            Opacity = MathHelper.Clamp(Opacity + skyActive.ToDirectionInt() * 0.1f, 0f, 1f);
+            Opacity = MathUtils.Saturate(Opacity + skyActive.ToDirectionInt() * 0.1f);
         }
 
         #region Boilerplate

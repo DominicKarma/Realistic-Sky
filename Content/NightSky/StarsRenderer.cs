@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using RealisticSky.Assets;
 using RealisticSky.Common.DataStructures;
+using RealisticSky.Common.Utilities;
 using RealisticSky.Content.Atmosphere;
 using RealisticSky.Content.Sun;
 using RealisticSky.Core.CrossCompatibility.Inbound;
@@ -169,7 +170,7 @@ namespace RealisticSky.Content.NightSky
             }
 
             // Calculate the star opacity. If it's zero, don't waste resources rendering anything.
-            float starOpacity = MathHelper.Clamp(MathF.Pow(1f - Main.atmo, 3f) + MathF.Pow(1f - RealisticSkyManager.SkyBrightness, 5f), 0f, 1f) * opacity;
+            float starOpacity = MathUtils.Saturate(MathF.Pow(1f - Main.atmo, 3f) + MathF.Pow(1f - RealisticSkyManager.SkyBrightness, 5f)) * opacity;
             if (starOpacity <= 0f)
                 return;
 

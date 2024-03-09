@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using RealisticSky.Assets;
 using RealisticSky.Common.DataStructures;
+using RealisticSky.Common.Utilities;
 using RealisticSky.Content.Atmosphere;
 using RealisticSky.Content.Sun;
 using ReLogic.Content;
@@ -81,7 +82,7 @@ namespace RealisticSky.Content.Clouds
             shader.Parameters["cloudSurfaceFadeHeightTop"]?.SetValue((float)player.WorldSurface * 16f - player.MaxTilesY * 0.25f);
             shader.Parameters["cloudSurfaceFadeHeightBottom"]?.SetValue((float)player.WorldSurface * 16f);
             shader.Parameters["parallax"]?.SetValue(new Vector2(0.3f, 0.175f) * Main.caveParallax);
-            shader.Parameters["cloudDensity"]?.SetValue(MathHelper.Clamp(cloudOpacity * 1.2f, 0f, 1f));
+            shader.Parameters["cloudDensity"]?.SetValue(MathUtils.Saturate(cloudOpacity * 1.2f));
             shader.Parameters["horizontalOffset"]?.SetValue(CloudHorizontalOffset);
             shader.Parameters["cloudExposure"]?.SetValue(cloudExposure);
             shader.Parameters["pixelationFactor"]?.SetValue(4f);

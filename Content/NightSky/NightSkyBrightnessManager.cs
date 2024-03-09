@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using RealisticSky.Common.Utilities;
 using Terraria;
 using Terraria.ModLoader;
 
@@ -17,7 +18,7 @@ namespace RealisticSky.Content.NightSky
                 if (Main.dayTime)
                     nightCompletion = 0f;
 
-                return Utils.GetLerpValue(0f, 0.15f, nightCompletion, true) * Utils.GetLerpValue(1f, 0.85f, nightCompletion, true) * 0.08f;
+                return MathUtils.InverseLerpBump(nightCompletion, 0f, 0.15f, 0.85f, 1f) * 0.08f;
             }
         }
 
