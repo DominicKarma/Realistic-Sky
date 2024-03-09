@@ -52,7 +52,7 @@ namespace RealisticSky.Content.NightSky
 
         public static void Render()
         {
-            if (TexturesRegistry.Galaxy.IsDisposed)
+            if (TexturesRegistry.Galaxy.Asset.IsDisposed)
                 return;
 
             // Update the galaxy's opacity.

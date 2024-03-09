@@ -11,7 +11,7 @@ namespace RealisticSky.Content.Sun
     {
         public static void Render(float sunriseAndSetInterpolant)
         {
-            if (TexturesRegistry.BloomCircle.IsDisposed)
+            if (TexturesRegistry.BloomCircle.Asset.IsDisposed)
                 return;
 
             // Make things stronger when in space, and weaker during sunrises and sunsets.
@@ -67,7 +67,7 @@ namespace RealisticSky.Content.Sun
 
         public static void DrawEclipseOverlay()
         {
-            if (TexturesRegistry.BloomCircle.IsDisposed)
+            if (TexturesRegistry.BloomCircle.Asset.IsDisposed)
                 return;
 
             Texture2D moon = TexturesRegistry.EclipseMoon.Value;
