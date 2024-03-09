@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
 using Terraria;
@@ -8,6 +9,8 @@ namespace RealisticSky.Content
 {
     public class GalaxyRenderer : ModSystem
     {
+        internal static Asset<Texture2D> BigBloomAsset;
+
         internal static Asset<Texture2D> GalaxyAsset;
 
         /// <summary>
@@ -29,6 +32,7 @@ namespace RealisticSky.Content
 
         public override void OnModLoad()
         {
+            BigBloomAsset = ModContent.Request<Texture2D>("RealisticSky/Assets/ExtraTextures/BloomCircleBig");
             GalaxyAsset = ModContent.Request<Texture2D>("RealisticSky/Assets/ExtraTextures/Galaxy");
         }
 
@@ -41,7 +45,7 @@ namespace RealisticSky.Content
             // 2. The darkness of the sky. In the real world, the Milky Way is only visible on the darkest, most light-pollution-free nights. This is modeled here by requiring a super dark sky brightness to appear.
             // 3. The Y position of the camera. This results in the galaxy's opacity being weak near the edge of the planet's atmosphere, since that counts as a form of light.
             float starInterpolant = Utils.GetLerpValue(1000f, 5000f, RealisticSkyConfig.Instance.NightSkyStarCount, true);
-            float skyDarknessInterpolant = Utils.GetLerpValue(0.1f, 0.05f, RealisticSkyManager.SkyBrightness, true);
+            float skyDarknessInterpolant = Utils.GetLerpValue(0.093f, 0.03f, RealisticSkyManager.SkyBrightness, true);
             float spaceHeightInterpolant = RealisticSkyManager.SpaceHeightInterpolant;
             float proximityToAtmosphereEdgeInterpolant = spaceHeightInterpolant * Utils.GetLerpValue(0.95f, 0.81f, spaceHeightInterpolant, true);
 
@@ -64,13 +68,20 @@ namespace RealisticSky.Content
             // Update the galaxy's opacity.
             UpdateOpacity();
 
-            // Draw the galaxy.
+            // Calculate draw variables.
             Texture2D galaxy = GalaxyAsset.Value;
             Vector2 screenSize = new(Main.instance.GraphicsDevice.Viewport.Width, Main.instance.GraphicsDevice.Viewport.Height);
             float galaxyScale = screenSize.X / galaxy.Width * 0.95f;
-            Color galaxyColor = new Color(1f, 1f, 1f) * MovingGalaxyOpacity;
+            Color galaxyColor = new Color(1.2f, 0.9f, 1f) * MovingGalaxyOpacity;
             Vector2 galaxyDrawPosition = screenSize * new Vector2(0.6f, 0.6f);
-            Main.spriteBatch.Draw(galaxy, galaxyDrawPosition, null, galaxyColor, RealisticSkyManager.StarViewRotation * 0.84f + 0.23f, galaxy.Size() * 0.5f, galaxyScale, 0, 0f);
+
+            // Draw a glow behind the galaxy.
+            Texture2D bloom = BigBloomAsset.Value;
+            Main.spriteBatch.Draw(bloom, galaxyDrawPosition, null, galaxyColor * MathF.Sqrt(MovingGalaxyOpacity) * 0.85f, 0f, bloom.Size() * 0.5f, galaxyScale * 0.29f, 0, 0f);
+            Main.spriteBatch.Draw(bloom, galaxyDrawPosition, null, galaxyColor * MovingGalaxyOpacity * 0.5f, 0f, bloom.Size() * 0.5f, galaxyScale * 3f, 0, 0f);
+
+            // Draw the galaxy.
+            Main.spriteBatch.Draw(galaxy, galaxyDrawPosition, null, galaxyColor * 0.64f, RealisticSkyManager.StarViewRotation * 0.84f + 0.23f, galaxy.Size() * 0.5f, galaxyScale, 0, 0f);
         }
     }
 }
