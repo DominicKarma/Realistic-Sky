@@ -40,8 +40,8 @@ namespace RealisticSky.Content.NightSky
             float proximityToAtmosphereEdgeInterpolant = spaceHeightInterpolant * Utils.GetLerpValue(0.95f, 0.81f, spaceHeightInterpolant, true);
 
             // Combine the aforementioned interpolants together into a single desired opacity value.
-            float idealGlaxayOpacityInterpolant = starInterpolant * skyDarknessInterpolant;
-            float idealGalaxyOpacity = MathHelper.SmoothStep(0f, 0.7f, idealGlaxayOpacityInterpolant);
+            float idealGalaxyOpacityInterpolant = starInterpolant * skyDarknessInterpolant;
+            float idealGalaxyOpacity = MathHelper.SmoothStep(0f, 0.7f, idealGalaxyOpacityInterpolant);
 
             // Make the galaxy harder to see in space, since in the space the atmosphere noticeably creates light.
             idealGalaxyOpacity *= MathHelper.SmoothStep(1f, 0.25f, proximityToAtmosphereEdgeInterpolant);
