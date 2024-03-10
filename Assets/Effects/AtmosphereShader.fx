@@ -66,7 +66,7 @@ float4 CalculateScatteredLight(float3 rayOrigin, float3 rayDirection)
     float3 scatteringCoefficients = pow(400 / rgbLightWavelengths, 4);
     
     // Calculate how far the atmosphere intersection must travel.
-    // If no intersection happened, simply return 0;
+    // If no intersection happened, simply return 0.
     float atmosphereIntersectionLength = intersectionDistances.y - intersectionDistances.x;
     if (atmosphereIntersectionLength <= 0)
         return 0;

@@ -104,7 +104,7 @@ float4 CalculateScatteredLight(float3 rayOrigin, float3 rayDirection)
     float2 intersectionDistances = GetRayBoxIntersectionOffsets(rayOrigin, rayDirection, boxMin, boxMax);
     
     // Calculate how far the cloud intersection must travel.
-    // If no intersection happened, simply return 0;
+    // If no intersection happened, simply return 0.
     float cloudIntersectionLength = intersectionDistances.y - intersectionDistances.x;
     if (cloudIntersectionLength <= 0)
         return 0;
