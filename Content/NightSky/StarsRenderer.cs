@@ -103,13 +103,13 @@ namespace RealisticSky.Content.NightSky
             for (int i = 0; i < Stars.Length; i++)
             {
                 // Acquire vertices for the star.
-                Stars[i].GenerateVertices(1f, out var topLeft, out var topRight, out var bottomLeft, out var bottomRight);
+                Quad<VertexPositionColorTexture> quad = Stars[i].GenerateVertices(1f);
 
                 int bufferIndex = i * 4;
-                vertices[bufferIndex] = topLeft;
-                vertices[bufferIndex + 1] = topRight;
-                vertices[bufferIndex + 2] = bottomRight;
-                vertices[bufferIndex + 3] = bottomLeft;
+                vertices[bufferIndex] = quad.TopLeft;
+                vertices[bufferIndex + 1] = quad.TopRight;
+                vertices[bufferIndex + 2] = quad.BottomRight;
+                vertices[bufferIndex + 3] = quad.BottomLeft;
             }
 
             // Send the vertices to the buffer.

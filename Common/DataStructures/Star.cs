@@ -34,7 +34,7 @@ namespace RealisticSky.Common.DataStructures
             Radius = radius;
         }
 
-        internal void GenerateVertices(float scale, out VertexPositionColorTexture topLeft, out VertexPositionColorTexture topRight, out VertexPositionColorTexture bottomLeft, out VertexPositionColorTexture bottomRight)
+        internal Quad<VertexPositionColorTexture> GenerateVertices(float scale)
         {
             // Calculate screen-relative position values.
             Vector2 screenSize = new(Main.instance.GraphicsDevice.Viewport.Width, Main.instance.GraphicsDevice.Viewport.Height);
@@ -48,10 +48,11 @@ namespace RealisticSky.Common.DataStructures
             Vector3 bottomRightPosition = screenPosition + radiusVector;
 
             // Generate vertices.
-            topLeft = new(topLeftPosition, Color, Vector2.Zero);
-            topRight = new(topRightPosition, Color, Vector2.UnitX);
-            bottomLeft = new(bottomLeftPosition, Color, Vector2.UnitY);
-            bottomRight = new(bottomRightPosition, Color, Vector2.One);
+            VertexPositionColorTexture topLeft = new(topLeftPosition, Color, Vector2.Zero);
+            VertexPositionColorTexture topRight = new(topRightPosition, Color, Vector2.UnitX);
+            VertexPositionColorTexture bottomLeft = new(bottomLeftPosition, Color, Vector2.UnitY);
+            VertexPositionColorTexture bottomRight = new(bottomRightPosition, Color, Vector2.One);
+            return new(topLeft, topRight, bottomLeft, bottomRight);
         }
     }
 }
