@@ -26,6 +26,21 @@ namespace RealisticSky.Content.Clouds
         }
 
         /// <summary>
+        /// The default movement speed that clouds should adhere to, ignoring <see cref="Main.dayRate"/> and <see cref="Main.windSpeedCurrent"/>.
+        /// </summary>
+        public const float StandardCloudMovementSpeed = 0.0017f;
+
+        /// <summary>
+        /// The closest possible Z position of the sun from the perspective of the clouds.
+        /// </summary>
+        public const float NearSunZPosition = -10f;
+
+        /// <summary>
+        /// The furthest possible Z position of the sun from the perspective of the clouds.
+        /// </summary>
+        public const float FarSunZPosition = -500f;
+
+        /// <summary>
         /// The identifier key for the sky's cloud shader.
         /// </summary>
         public const string CloudShaderKey = "RealisticSky:CloudShader";
@@ -61,12 +76,13 @@ namespace RealisticSky.Content.Clouds
 
             // Move clouds.
             if (!Main.gamePaused)
-                CloudHorizontalOffset -= Main.windSpeedCurrent * (float)Main.dayRate * 0.0017f;
+                CloudHorizontalOffset -= Main.windSpeedCurrent * (float)Main.dayRate * StandardCloudMovementSpeed;
 
             // Prepare the cloud shader.
             SkyPlayerSnapshot player = SkyPlayerSnapshot.TakeSnapshot();
             float dayCycleCompletion = (float)(Main.time / (Main.dayTime ? Main.dayLength : Main.nightLength));
-            float sunZPosition = -10f - MathF.Pow(MathF.Sin(MathHelper.Pi * dayCycleCompletion), 0.51f) * 495f;
+            float sunDistanceInterpolant = MathF.Pow(MathF.Sin(MathHelper.Pi * dayCycleCompletion), 0.51f);
+            float sunZPosition = MathHelper.Lerp(NearSunZPosition, FarSunZPosition, sunDistanceInterpolant);
             float cloudExposure = Utils.Remap(RealisticSkyConfig.Instance.CloudExposure, RealisticSkyConfig.MinCloudExposure, RealisticSkyConfig.MaxCloudExposure, 0.5f, 1.5f) * 1.3f;
             Effect shader = GameShaders.Misc[CloudShaderKey].Shader;
             if (shader.IsDisposed)
