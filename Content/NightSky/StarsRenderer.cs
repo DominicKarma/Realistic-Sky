@@ -34,11 +34,6 @@ namespace RealisticSky.Content.NightSky
         internal static IndexBuffer StarIndexBuffer;
 
         /// <summary>
-        /// The basic shader responsible for rendering the contents of the <see cref="StarVertexBuffer"/>.
-        /// </summary>
-        internal static BasicEffect StarShader;
-
-        /// <summary>
         /// The minimum brightness that a star can be at as a result of twinkling.
         /// </summary>
         public const float MinTwinkleBrightness = 0.2f;
@@ -200,6 +195,7 @@ namespace RealisticSky.Content.NightSky
             // Request the atmosphere target.
             AtmosphereRenderer.AtmosphereTarget.Request();
 
+            // Supply textures.
             Main.instance.GraphicsDevice.Textures[1] = TexturesRegistry.BloomCircle.Value;
             Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearWrap;
             Main.instance.GraphicsDevice.Textures[2] = !AtmosphereRenderer.AtmosphereTarget.IsReady ? TextureAssets.MagicPixel.Value : AtmosphereRenderer.AtmosphereTarget.GetTarget();
