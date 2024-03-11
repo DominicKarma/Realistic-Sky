@@ -17,7 +17,7 @@ namespace RealisticSky.Content.Clouds
     public class CloudsRenderer : ModSystem
     {
         /// <summary>
-        /// The horizontal offset of clouds.
+        ///     The horizontal offset of clouds.
         /// </summary>
         public static float CloudHorizontalOffset
         {
@@ -26,22 +26,34 @@ namespace RealisticSky.Content.Clouds
         }
 
         /// <summary>
-        /// The default movement speed that clouds should adhere to, ignoring <see cref="Main.dayRate"/> and <see cref="Main.windSpeedCurrent"/>.
+        ///     The moving opacity of the clouds.
+        /// </summary>
+        /// <remarks>
+        ///     This exists so that the clouds's opacity can smoothly move around, rather than having the entire thing make choppy visual changes due to the potential for cloud configurations to suddenly and randomly change.
+        /// </remarks>
+        public static float MovingCloudOpacity
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        ///     The default movement speed that clouds should adhere to, ignoring <see cref="Main.dayRate"/> and <see cref="Main.windSpeedCurrent"/>.
         /// </summary>
         public const float StandardCloudMovementSpeed = 0.0017f;
 
         /// <summary>
-        /// The closest possible Z position of the sun from the perspective of the clouds.
+        ///     The closest possible Z position of the sun from the perspective of the clouds.
         /// </summary>
         public const float NearSunZPosition = -10f;
 
         /// <summary>
-        /// The furthest possible Z position of the sun from the perspective of the clouds.
+        ///     The furthest possible Z position of the sun from the perspective of the clouds.
         /// </summary>
         public const float FarSunZPosition = -500f;
 
         /// <summary>
-        /// The identifier key for the sky's cloud shader.
+        ///     The identifier key for the sky's cloud shader.
         /// </summary>
         public const string CloudShaderKey = "RealisticSky:CloudShader";
 
@@ -63,12 +75,15 @@ namespace RealisticSky.Content.Clouds
                 Main.cloud[i].active = false;
 
             // Calculate the cloud opacity, capping it at 1.
-            float cloudOpacity = MathF.Max((Main.numCloudsTemp - 20) / (float)Main.maxClouds, Main.cloudAlpha);
-            if (cloudOpacity > 1f)
-                cloudOpacity = 1f;
+            float idealCloudOpacity = MathF.Max((Main.numCloudsTemp - 20) / (float)Main.maxClouds, Main.cloudAlpha);
+            if (idealCloudOpacity > 1f)
+                idealCloudOpacity = 1f;
 
-            // If the cloud opacity is 0 or less, that means that there's nothing to draw and this method should terminate immediately for performance reasons.
-            if (cloudOpacity <= 0f)
+            // Update the cloud opacity.
+            MovingCloudOpacity = MathHelper.Lerp(MovingCloudOpacity, idealCloudOpacity, 0.08f);
+
+            // If the cloud opacity is 0.002 or less, that means that there's nothing to draw and this method should terminate immediately for performance reasons.
+            if (MovingCloudOpacity <= 0.002f)
                 return;
 
             // Calculate the true screen size.
@@ -98,7 +113,7 @@ namespace RealisticSky.Content.Clouds
             shader.Parameters["cloudSurfaceFadeHeightTop"]?.SetValue((float)player.WorldSurface * 16f - player.MaxTilesY * 0.25f);
             shader.Parameters["cloudSurfaceFadeHeightBottom"]?.SetValue((float)player.WorldSurface * 16f);
             shader.Parameters["parallax"]?.SetValue(new Vector2(0.3f, 0.175f) * Main.caveParallax);
-            shader.Parameters["cloudDensity"]?.SetValue(MathUtils.Saturate(cloudOpacity * 1.2f));
+            shader.Parameters["cloudDensity"]?.SetValue(MathUtils.Saturate(MovingCloudOpacity * 1.2f));
             shader.Parameters["horizontalOffset"]?.SetValue(CloudHorizontalOffset);
             shader.Parameters["cloudExposure"]?.SetValue(cloudExposure);
             shader.Parameters["pixelationFactor"]?.SetValue(4f);
@@ -119,9 +134,9 @@ namespace RealisticSky.Content.Clouds
             Texture2D cloud = TexturesRegistry.CloudDensityMap.Value;
             Vector2 drawPosition = screenSize * 0.5f;
             Vector2 skyScale = screenSize / cloud.Size();
-            Color cloudsColor = Color.Lerp(Main.ColorOfTheSkies, Color.White, 0.05f) * MathF.Pow(cloudOpacity, 0.67f) * 2.67f;
+            Color cloudsColor = Color.Lerp(Main.ColorOfTheSkies, Color.White, 0.05f) * MathF.Pow(idealCloudOpacity, 0.67f) * 2.67f;
             cloudsColor = Color.Lerp(cloudsColor, Color.OrangeRed, sunsetGlowInterpolant);
-            cloudsColor.A = (byte)(cloudOpacity * 255f);
+            cloudsColor.A = (byte)(idealCloudOpacity * 255f);
             Main.spriteBatch.Draw(cloud, drawPosition, null, cloudsColor, 0f, cloud.Size() * 0.5f, skyScale, 0, 0f);
         }
     }
