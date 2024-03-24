@@ -1,4 +1,4 @@
 displayName = Realistic Sky
 author = Dominic Karma
-version = 1.0.17
+version = 1.0.18
 side = Client

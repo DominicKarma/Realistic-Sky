@@ -1,0 +1,55 @@
+Configs: {
+	RealisticSkyConfig: {
+		DisplayName: 真实天空配置
+
+		ShowInMainMenu: {
+			Label: 主菜单显示
+			Tooltip: 开启后会在主菜单中显示真实天空。
+		}
+
+		PerformanceMode: {
+			Label: 性能模式
+			Tooltip: 开启后会降低天空质量从而提高游戏性能。
+		}
+
+		RedWavelength: {
+			Label: 红色波长
+			Tooltip: 红光波长，以纳米为单位，据气层效果而定。
+		}
+
+		GreenWavelength: {
+			Label: 绿色波长
+			Tooltip: 绿光波长，以纳米为单位，据气层效果而定。
+		}
+
+		BlueWavelength: {
+			Label: 蓝色波长
+			Tooltip: 蓝光波长，以纳米为单位，据气层效果而定。
+		}
+
+		SunlightExposure: {
+			Label: 阳光照射
+			Tooltip: 气层效果的大致阳光强度。
+		}
+
+		RealisticClouds: {
+			Label: 真实的云
+			Tooltip: 开启或关闭显示真实的云。
+		}
+
+		CloudExposure: {
+			Label: 云层照射
+			Tooltip: 穿过云层的光线大致强度。
+		}
+
+		NightSkyStarCount: {
+			Label: 夜空星星数量
+			Tooltip: 夜空中存在的星星数量。
+		}
+
+		DisableEffectsDuringBossFights: {
+			Label: Boss战期间效果禁用
+			Tooltip: 开启后会在Boss战期间禁用真实天空效果。
+		}
+	}
+}
