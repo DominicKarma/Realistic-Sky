@@ -96,7 +96,14 @@ namespace RealisticSky.Content.Clouds
             // Prepare the cloud shader.
             SkyPlayerSnapshot player = SkyPlayerSnapshot.TakeSnapshot();
             float dayCycleCompletion = (float)(Main.time / (Main.dayTime ? Main.dayLength : Main.nightLength));
-            float sunDistanceInterpolant = MathF.Pow(MathF.Sin(MathHelper.Pi * dayCycleCompletion), 0.51f);
+            float noonMidnightInterpolant = MathF.Sin(MathHelper.Pi * dayCycleCompletion);
+
+            // Reports have arisen of sunZPosition in occasional circumstances having NaN values. I am strongly suspicious that the above sine
+            // calculation is in some circumstances outputting tiny negative values, causing the power function to fail and give back NaN.
+            // In order to get around this, a sanity check will be performed to ensure that the interpolant will never be below zero.
+            noonMidnightInterpolant = MathUtils.Saturate(noonMidnightInterpolant);
+
+            float sunDistanceInterpolant = MathF.Pow(noonMidnightInterpolant, 0.51f);
             float sunZPosition = MathHelper.Lerp(NearSunZPosition, FarSunZPosition, sunDistanceInterpolant);
             float cloudExposure = Utils.Remap(RealisticSkyConfig.Instance.CloudExposure, RealisticSkyConfig.MinCloudExposure, RealisticSkyConfig.MaxCloudExposure, 0.5f, 1.5f) * 1.3f;
             Effect shader = GameShaders.Misc[CloudShaderKey].Shader;
