@@ -102,14 +102,34 @@ namespace RealisticSky.Content
         /// </summary>
         public static float StarViewRotation => DaysCounterSystem.DayCounter * -2.3f;
 
+        /// <summary>
+        /// Whether the overall scene can render.
+        /// </summary>
+        /// 
+        /// <remarks>
+        /// This depends on the player's position in the world, preventing rendering when below a certain position, to ensure that the sky does not appear in the underworld.
+        /// </remarks>
+        public static bool CanRender
+        {
+            get
+            {
+                SkyPlayerSnapshot player = SkyPlayerSnapshot.TakeSnapshot();
+                return player.Center.Y / 16f < player.WorldSurface + 250;
+            }
+        }
+
         public override void Draw(SpriteBatch spriteBatch, float minDepth, float maxDepth)
         {
             // Safety check to ensure that the mod doesn't attempt to render anything when mods are unloading on the title screen.
             if (RealisticSkyConfig.Instance is null)
                 return;
 
-            // Prevent drawing beyond the back layer.
+            // Prevent rendering beyond the back layer.
             if (maxDepth < float.MaxValue || minDepth >= float.MaxValue)
+                return;
+
+            // Prevent rendering where otherwise not permitting.
+            if (!CanRender)
                 return;
 
             // Calculate the background draw matrix in advance.
