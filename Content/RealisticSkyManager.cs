@@ -171,6 +171,8 @@ namespace RealisticSky.Content
         {
             // Increase or decrease the opacity of this sky based on whether it's active or not, stopping at 0-1 bounds.
             Opacity = MathUtils.Saturate(Opacity + skyActive.ToDirectionInt() * 0.1f);
+
+            SunRenderer.SunBloomOpacity = MathUtils.Saturate(SunRenderer.SunBloomOpacity + 0.02f);
         }
 
         #region Boilerplate

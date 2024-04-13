@@ -6,7 +6,6 @@ using RealisticSky.Common.DataStructures;
 using RealisticSky.Common.Utilities;
 using RealisticSky.Content.Atmosphere;
 using RealisticSky.Content.Sun;
-using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
@@ -60,7 +59,7 @@ namespace RealisticSky.Content.Clouds
         public override void OnModLoad()
         {
             // Store the cloud shader.
-            GameShaders.Misc[CloudShaderKey] = new MiscShaderData(new(ModContent.Request<Effect>("RealisticSky/Assets/Effects/CloudShader", AssetRequestMode.ImmediateLoad).Value), "AutoloadPass");
+            GameShaders.Misc[CloudShaderKey] = new MiscShaderData(ModContent.Request<Effect>("RealisticSky/Assets/Effects/CloudShader"), "AutoloadPass");
         }
 
         public static void Render()

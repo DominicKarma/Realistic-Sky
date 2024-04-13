@@ -7,7 +7,6 @@ using RealisticSky.Common.Utilities;
 using RealisticSky.Content.Atmosphere;
 using RealisticSky.Content.Sun;
 using RealisticSky.Core.CrossCompatibility.Inbound;
-using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
@@ -51,7 +50,7 @@ namespace RealisticSky.Content.NightSky
         public override void OnModLoad()
         {
             // Initialize the star shader.
-            GameShaders.Misc[StarShaderKey] = new MiscShaderData(new(ModContent.Request<Effect>("RealisticSky/Assets/Effects/StarPrimitiveShader", AssetRequestMode.ImmediateLoad).Value), "AutoloadPass");
+            GameShaders.Misc[StarShaderKey] = new MiscShaderData(ModContent.Request<Effect>("RealisticSky/Assets/Effects/StarPrimitiveShader"), "AutoloadPass");
 
             // Generate stars.
             GenerateStars(RealisticSkyConfig.Instance.NightSkyStarCount);

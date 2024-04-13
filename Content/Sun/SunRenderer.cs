@@ -9,13 +9,22 @@ namespace RealisticSky.Content.Sun
 {
     public class SunRenderer : ModSystem
     {
+        /// <summary>
+        /// The intensity of bloom from the sun.
+        /// </summary>
+        public static float SunBloomOpacity
+        {
+            get;
+            set;
+        } = 1f;
+
         public static void Render(float sunriseAndSetInterpolant)
         {
             if (TexturesRegistry.BloomCircle.Asset.IsDisposed)
                 return;
 
             // Make things stronger when in space, and weaker during sunrises and sunsets.
-            float bloomOpacity = MathHelper.Lerp(1f, 0.5f, sunriseAndSetInterpolant);
+            float bloomOpacity = MathHelper.Lerp(1f, 0.5f, sunriseAndSetInterpolant) * SunBloomOpacity;
             float spaceInterpolant = RealisticSkyManager.SpaceHeightInterpolant;
             float scaleFactor = (spaceInterpolant * 0.21f + 1f) * bloomOpacity;
             float pureWhiteInterpolant = MathF.Pow(spaceInterpolant, 2f);

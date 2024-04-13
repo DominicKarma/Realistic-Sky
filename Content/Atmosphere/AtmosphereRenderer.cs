@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using RealisticSky.Common.DataStructures;
 using RealisticSky.Content.Sun;
-using ReLogic.Content;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
@@ -25,7 +24,7 @@ namespace RealisticSky.Content.Atmosphere
         public override void OnModLoad()
         {
             // Store the atmosphere shader.
-            GameShaders.Misc[AtmosphereShaderKey] = new MiscShaderData(new(ModContent.Request<Effect>("RealisticSky/Assets/Effects/AtmosphereShader", AssetRequestMode.ImmediateLoad).Value), "AutoloadPass");
+            GameShaders.Misc[AtmosphereShaderKey] = new MiscShaderData(ModContent.Request<Effect>("RealisticSky/Assets/Effects/AtmosphereShader"), "AutoloadPass");
 
             // Initialize the atmosphere target.
             AtmosphereTarget = new();
