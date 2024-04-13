@@ -1,4 +1,6 @@
-﻿using RealisticSky.Content;
+﻿using System;
+using RealisticSky.Content;
+using RealisticSky.Content.Sun;
 using Terraria.Graphics.Effects;
 using Terraria.ModLoader;
 
@@ -10,6 +12,18 @@ namespace RealisticSky
         {
             SkyManager.Instance[RealisticSkyManager.SkyKey] = new RealisticSkyManager();
             SkyManager.Instance[RealisticSkyManager.SkyKey].Load();
+        }
+
+        public override object Call(params object[] args)
+        {
+            string command = ((string)args[0]).ToLower();
+            if (command == "setsunbloomopacity")
+            {
+                float sunBloomOpacity = Convert.ToSingle(args[1]);
+                SunRenderer.SunBloomOpacity = sunBloomOpacity;
+            }
+
+            return new();
         }
     }
 }
