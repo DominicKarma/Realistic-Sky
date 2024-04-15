@@ -28,7 +28,7 @@ namespace RealisticSky.Content.Clouds
         ///     The moving opacity of the clouds.
         /// </summary>
         /// <remarks>
-        ///     This exists so that the clouds's opacity can smoothly move around, rather than having the entire thing make choppy visual changes due to the potential for cloud configurations to suddenly and randomly change.
+        ///     This exists so that the clouds' opacity can smoothly move around, rather than having the entire thing make choppy visual changes due to the potential for cloud configurations to suddenly and randomly change.
         /// </remarks>
         public static float MovingCloudOpacity
         {
@@ -106,7 +106,7 @@ namespace RealisticSky.Content.Clouds
             float sunZPosition = MathHelper.Lerp(NearSunZPosition, FarSunZPosition, sunDistanceInterpolant);
             float cloudExposure = Utils.Remap(RealisticSkyConfig.Instance.CloudExposure, RealisticSkyConfig.MinCloudExposure, RealisticSkyConfig.MaxCloudExposure, 0.5f, 1.5f) * 1.3f;
             Effect shader = GameShaders.Misc[CloudShaderKey].Shader;
-            if (shader.IsDisposed)
+            if (shader?.IsDisposed ?? true)
                 return;
 
             shader.Parameters["screenSize"]?.SetValue(screenSize);

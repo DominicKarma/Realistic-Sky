@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ModLoader;
 
 namespace RealisticSky.Common.DataStructures
 {
@@ -18,12 +19,17 @@ namespace RealisticSky.Common.DataStructures
 
         public int MaxTilesY { get; }
 
+        public bool InEternalGardenSubworld { get; }
+
         public SkyPlayerSnapshot(Player player)
         {
             Center = player.Center;
             InvertedGravity = player.gravDir <= -1f;
             WorldSurface = Main.worldSurface;
             MaxTilesY = Main.maxTilesY;
+
+            if (ModContent.TryFind("NoxusBoss", "EternalGardenBiome", out ModBiome garden))
+                InEternalGardenSubworld = player.InModBiome(garden);
         }
 
         public SkyPlayerSnapshot()
@@ -33,6 +39,7 @@ namespace RealisticSky.Common.DataStructures
             InvertedGravity = false;
             WorldSurface = 337;
             MaxTilesY = 1200;
+            InEternalGardenSubworld = false;
         }
 
         public static SkyPlayerSnapshot TakeSnapshot()

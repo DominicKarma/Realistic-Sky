@@ -37,7 +37,7 @@ namespace RealisticSky.Content.Atmosphere
             if (!GameShaders.Misc.TryGetValue(AtmosphereShaderKey, out MiscShaderData s) || RealisticSkyConfig.Instance is null)
                 return;
             Effect shader = s.Shader;
-            if (shader.IsDisposed)
+            if (shader?.IsDisposed ?? true)
                 return;
 
             SkyPlayerSnapshot player = SkyPlayerSnapshot.TakeSnapshot();

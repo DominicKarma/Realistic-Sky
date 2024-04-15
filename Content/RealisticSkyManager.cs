@@ -107,13 +107,16 @@ namespace RealisticSky.Content
         /// </summary>
         /// 
         /// <remarks>
-        /// This depends on the player's position in the world, preventing rendering when below a certain position, to ensure that the sky does not appear in the underworld.
+        /// This depends on the player's position in the world, preventing rendering when below a certain position, to ensure that the sky does not appear in the underworld.<br>
         /// </remarks>
         public static bool CanRender
         {
             get
             {
                 SkyPlayerSnapshot player = SkyPlayerSnapshot.TakeSnapshot();
+                if (player.InEternalGardenSubworld)
+                    return false;
+
                 return player.Center.Y / 16f < player.WorldSurface + 250;
             }
         }

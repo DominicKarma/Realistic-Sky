@@ -172,7 +172,7 @@ namespace RealisticSky.Content.NightSky
             if (!GameShaders.Misc.TryGetValue(StarShaderKey, out MiscShaderData s))
                 return;
             Effect starShader = s.Shader;
-            if (starShader.IsDisposed)
+            if (starShader?.IsDisposed ?? true)
                 return;
 
             // Don't waste resources rendering anything if there are no stars to draw.
