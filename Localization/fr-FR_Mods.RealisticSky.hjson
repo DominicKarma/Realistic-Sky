@@ -1,0 +1,55 @@
+Configs: {
+	RealisticSkyConfig: {
+		DisplayName: Configuration de Realistic Sky
+
+		ShowInMainMenu: {
+			Label: Ciel réaliste dans le menu
+			Tooltip: Est-ce que le ciel devrait être plus réaliste dans le menu ?
+		}
+
+		PerformanceMode: {
+			Label: Mode Performance
+			Tooltip: Est-ce que la qualité du ciel devrait être moins bonne en faveur des performances ?
+		}
+
+		RedWavelength: {
+			Label: Longueur de la lumière rouge
+			Tooltip: La longueur de la lumière rouge, en nanomètres, selon l'effet d'atmosphère.
+		}
+
+		GreenWavelength: {
+			Label: Longueur de la lumière verte
+			Tooltip: La longueur de la lumière verte, en nanomètres, selon l'effet d'atmosphère.
+		}
+
+		BlueWavelength: {
+			Label: Longueur de la lumière bleue
+			Tooltip: La longueur de la lumière bleue, en nanomètres, selon l'effet d'atmosphère.
+		}
+
+		SunlightExposure: {
+			Label: Exposition des rayons du soleil
+			Tooltip: L'intensité générale des rayons du soleil pour l'effet d'atmosphère.
+		}
+
+		RealisticClouds: {
+			Label: Nuages réalistes
+			Tooltip: Est-ce que les nuages devraient être rendus plus réalistes ?
+		}
+
+		CloudExposure: {
+			Label: Exposition des nuages
+			Tooltip: L'intensité générale de la lumière passant dans les nuages.
+		}
+
+		NightSkyStarCount: {
+			Label: Nombre d'étoiles dans le ciel nocturne
+			Tooltip: Le nombre d'étoiles qui devraient exister dans le ciel nocturne.
+		}
+
+		DisableEffectsDuringBossFights: {
+			Label: Désactiver les effets durant les combats de boss
+			Tooltip: Est-ce que les effets pour rendre le ciel plus réaliste devraient être désactivés durant les combats de boss ?
+		}
+	}
+}
