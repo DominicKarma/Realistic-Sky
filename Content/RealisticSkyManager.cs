@@ -16,6 +16,11 @@ namespace RealisticSky.Content
         private bool skyActive;
 
         /// <summary>
+        /// Whether this sky should be disabled this frame.
+        /// </summary>
+        internal static bool TemporarilyDisabled;
+
+        /// <summary>
         /// The general opacity of this sky.
         /// </summary>
         internal static new float Opacity;
@@ -125,6 +130,9 @@ namespace RealisticSky.Content
         {
             // Safety check to ensure that the mod doesn't attempt to render anything when mods are unloading on the title screen.
             if (RealisticSkyConfig.Instance is null)
+                return;
+
+            if (TemporarilyDisabled)
                 return;
 
             // Prevent rendering beyond the back layer.

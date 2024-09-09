@@ -22,6 +22,8 @@ namespace RealisticSky
                 float sunBloomOpacity = Convert.ToSingle(args[1]);
                 SunRenderer.SunBloomOpacity = sunBloomOpacity;
             }
+            if (command == "temporarilydisable")
+                RealisticSkyManager.TemporarilyDisabled = true;
 
             return new();
         }
