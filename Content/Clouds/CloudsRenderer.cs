@@ -4,10 +4,8 @@ using Microsoft.Xna.Framework.Graphics;
 using RealisticSky.Assets;
 using RealisticSky.Common.DataStructures;
 using RealisticSky.Common.Utilities;
-using RealisticSky.Content.Atmosphere;
 using RealisticSky.Content.Sun;
 using Terraria;
-using Terraria.GameContent;
 using Terraria.Graphics.Shaders;
 using Terraria.ModLoader;
 
@@ -16,7 +14,12 @@ namespace RealisticSky.Content.Clouds
     public class CloudsRenderer : ModSystem
     {
         /// <summary>
-        ///     The horizontal offset of clouds.
+        /// The render target that holds the contents of the clouds.
+        /// </summary>
+        internal static CloudsTargetContent CloudTarget;
+
+        /// <summary>
+        /// The horizontal offset of clouds.
         /// </summary>
         public static float CloudHorizontalOffset
         {
@@ -25,34 +28,7 @@ namespace RealisticSky.Content.Clouds
         }
 
         /// <summary>
-        ///     The moving opacity of the clouds.
-        /// </summary>
-        /// <remarks>
-        ///     This exists so that the clouds' opacity can smoothly move around, rather than having the entire thing make choppy visual changes due to the potential for cloud configurations to suddenly and randomly change.
-        /// </remarks>
-        public static float MovingCloudOpacity
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        ///     The default movement speed that clouds should adhere to, ignoring <see cref="Main.dayRate"/> and <see cref="Main.windSpeedCurrent"/>.
-        /// </summary>
-        public const float StandardCloudMovementSpeed = 0.0017f;
-
-        /// <summary>
-        ///     The closest possible Z position of the sun from the perspective of the clouds.
-        /// </summary>
-        public const float NearSunZPosition = -10f;
-
-        /// <summary>
-        ///     The furthest possible Z position of the sun from the perspective of the clouds.
-        /// </summary>
-        public const float FarSunZPosition = -500f;
-
-        /// <summary>
-        ///     The identifier key for the sky's cloud shader.
+        /// The identifier key for the sky's cloud shader.
         /// </summary>
         public const string CloudShaderKey = "RealisticSky:CloudShader";
 
@@ -60,6 +36,46 @@ namespace RealisticSky.Content.Clouds
         {
             // Store the cloud shader.
             GameShaders.Misc[CloudShaderKey] = new MiscShaderData(ModContent.Request<Effect>("RealisticSky/Assets/Effects/CloudShader"), "AutoloadPass");
+
+            CloudTarget = new();
+            Main.ContentThatNeedsRenderTargets.Add(CloudTarget);
+        }
+
+        public static void RenderToTarget()
+        {
+            if (!GameShaders.Misc.TryGetValue(CloudShaderKey, out MiscShaderData s) || RealisticSkyConfig.Instance is null)
+                return;
+            Effect shader = s.Shader;
+            if (shader?.IsDisposed ?? true)
+                return;
+
+            SkyPlayerSnapshot player = SkyPlayerSnapshot.TakeSnapshot();
+            GraphicsDevice gd = Main.instance.GraphicsDevice;
+            Vector2 screenSize = new(gd.Viewport.Width, gd.Viewport.Height);
+
+            Matrix backgroundMatrix = Main.BackgroundViewMatrix.TransformationMatrix;
+            Vector3 translationDirection = new(1f, Main.BackgroundViewMatrix.Effects.HasFlag(SpriteEffects.FlipVertically) ? -1f : 1f, 1f);
+            backgroundMatrix.Translation -= Main.BackgroundViewMatrix.ZoomMatrix.Translation * translationDirection;
+
+            Vector2 sunPosition = Main.dayTime ? SunPositionSaver.SunPosition : SunPositionSaver.MoonPosition;
+            sunPosition *= 0.5f;
+            sunPosition = Vector2.Transform(sunPosition, Matrix.Invert(backgroundMatrix));
+
+            float windDensityInterpolant = MathUtils.Saturate(Main.cloudAlpha + MathF.Abs(Main.windSpeedCurrent) * 0.84f);
+
+            shader.Parameters["globalTime"]?.SetValue(Main.GlobalTimeWrappedHourly);
+            shader.Parameters["invertedGravity"]?.SetValue(player.InvertedGravity);
+            shader.Parameters["screenSize"]?.SetValue(screenSize);
+            shader.Parameters["worldPosition"]?.SetValue(Main.screenPosition);
+            shader.Parameters["sunPosition"]?.SetValue(new Vector3(sunPosition, 5f));
+            shader.Parameters["sunColor"]?.SetValue(Main.ColorOfTheSkies.ToVector4());
+            shader.Parameters["cloudColor"]?.SetValue(Color.Lerp(Color.Wheat, Color.LightGray, 0.85f).ToVector4());
+            shader.Parameters["densityFactor"]?.SetValue(MathHelper.Lerp(10f, 0.3f, MathF.Pow(windDensityInterpolant, 0.48f)));
+            shader.Parameters["cloudHorizontalOffset"]?.SetValue(CloudHorizontalOffset);
+            shader.CurrentTechnique.Passes[0].Apply();
+
+            Texture2D cloud = TexturesRegistry.CloudDensityMap.Value;
+            Main.spriteBatch.Draw(cloud, new Rectangle(0, 0, (int)screenSize.X, (int)screenSize.Y), Color.White);
         }
 
         public static void Render()
@@ -73,77 +89,15 @@ namespace RealisticSky.Content.Clouds
             for (int i = 0; i < Main.maxClouds; i++)
                 Main.cloud[i].active = false;
 
-            // Calculate the cloud opacity, capping it at 1.
-            float idealCloudOpacity = MathF.Max((Main.numCloudsTemp - 20) / (float)Main.maxClouds, Main.cloudAlpha);
-            if (idealCloudOpacity > 1f)
-                idealCloudOpacity = 1f;
+            CloudHorizontalOffset -= Main.windSpeedCurrent * 0.3f;
 
-            // Update the cloud opacity.
-            MovingCloudOpacity = MathHelper.Lerp(MovingCloudOpacity, idealCloudOpacity, 0.08f);
-
-            // If the cloud opacity is 0.002 or less, that means that there's nothing to draw and this method should terminate immediately for performance reasons.
-            if (MovingCloudOpacity <= 0.002f)
+            CloudTarget.Request();
+            if (!CloudTarget.IsReady)
                 return;
 
-            // Calculate the true screen size.
-            Vector2 screenSize = new(Main.instance.GraphicsDevice.Viewport.Width, Main.instance.GraphicsDevice.Viewport.Height);
-
-            // Move clouds.
-            if (!Main.gamePaused)
-                CloudHorizontalOffset -= Main.windSpeedCurrent * (float)Main.dayRate * StandardCloudMovementSpeed;
-
-            // Prepare the cloud shader.
-            SkyPlayerSnapshot player = SkyPlayerSnapshot.TakeSnapshot();
-            float dayCycleCompletion = (float)(Main.time / (Main.dayTime ? Main.dayLength : Main.nightLength));
-            float noonMidnightInterpolant = MathF.Sin(MathHelper.Pi * dayCycleCompletion);
-
-            // Reports have arisen of sunZPosition in occasional circumstances having NaN values. I am strongly suspicious that the above sine
-            // calculation is in some circumstances outputting tiny negative values, causing the power function to fail and give back NaN.
-            // In order to get around this, a sanity check will be performed to ensure that the interpolant will never be below zero.
-            noonMidnightInterpolant = MathUtils.Saturate(noonMidnightInterpolant);
-
-            float sunDistanceInterpolant = MathF.Pow(noonMidnightInterpolant, 0.51f);
-            float sunZPosition = MathHelper.Lerp(NearSunZPosition, FarSunZPosition, sunDistanceInterpolant);
-            float cloudExposure = Utils.Remap(RealisticSkyConfig.Instance.CloudExposure, RealisticSkyConfig.MinCloudExposure, RealisticSkyConfig.MaxCloudExposure, 0.5f, 1.5f) * 1.3f;
-            Effect shader = GameShaders.Misc[CloudShaderKey].Shader;
-            if (shader?.IsDisposed ?? true)
-                return;
-
-            shader.Parameters["screenSize"]?.SetValue(screenSize);
-            shader.Parameters["invertedGravity"]?.SetValue(player.InvertedGravity);
-            shader.Parameters["sunPosition"]?.SetValue(new Vector3(Main.dayTime ? SunPositionSaver.SunPosition : SunPositionSaver.MoonPosition, sunZPosition));
-            shader.Parameters["globalTime"]?.SetValue(Main.GlobalTimeWrappedHourly);
-            shader.Parameters["worldPosition"]?.SetValue(Main.screenPosition);
-            shader.Parameters["cloudFadeHeightTop"]?.SetValue(3300f);
-            shader.Parameters["cloudFadeHeightBottom"]?.SetValue(4400f);
-            shader.Parameters["cloudSurfaceFadeHeightTop"]?.SetValue((float)player.WorldSurface * 16f - player.MaxTilesY * 0.25f);
-            shader.Parameters["cloudSurfaceFadeHeightBottom"]?.SetValue((float)player.WorldSurface * 16f);
-            shader.Parameters["parallax"]?.SetValue(new Vector2(0.3f, 0.175f) * Main.caveParallax);
-            shader.Parameters["cloudDensity"]?.SetValue(MathUtils.Saturate(MovingCloudOpacity * 1.2f));
-            shader.Parameters["horizontalOffset"]?.SetValue(CloudHorizontalOffset);
-            shader.Parameters["cloudExposure"]?.SetValue(cloudExposure);
-            shader.Parameters["pixelationFactor"]?.SetValue(4f);
-            shader.CurrentTechnique.Passes[0].Apply();
-
-            // Supply the atmosphere data to the clouds shader.
-            Main.instance.GraphicsDevice.Textures[1] = !AtmosphereRenderer.AtmosphereTarget.IsReady ? TextureAssets.MagicPixel.Value : AtmosphereRenderer.AtmosphereTarget.GetTarget();
-            Main.instance.GraphicsDevice.SamplerStates[1] = SamplerState.LinearClamp;
-
-            // Calculate the sunset glow interpolant.
-            // This will give colors an orange tint.
-            float sunsetGlowInterpolant = MathF.Sqrt(1f - RealisticSkyManager.SunlightIntensityByTime);
-            sunsetGlowInterpolant *= Utils.GetLerpValue(1f, 0.7f, sunsetGlowInterpolant, true);
-            if (!Main.dayTime)
-                sunsetGlowInterpolant = 0f;
-
-            // Draw the clouds.
-            Texture2D cloud = TexturesRegistry.CloudDensityMap.Value;
-            Vector2 drawPosition = screenSize * 0.5f;
-            Vector2 skyScale = screenSize / cloud.Size();
-            Color cloudsColor = Color.Lerp(Main.ColorOfTheSkies, Color.White, 0.05f) * MathF.Pow(idealCloudOpacity, 0.67f) * 2.67f;
-            cloudsColor = Color.Lerp(cloudsColor, Color.OrangeRed, sunsetGlowInterpolant);
-            cloudsColor.A = (byte)(idealCloudOpacity * 255f);
-            Main.spriteBatch.Draw(cloud, drawPosition, null, cloudsColor, 0f, cloud.Size() * 0.5f, skyScale, 0, 0f);
+            GraphicsDevice gd = Main.instance.GraphicsDevice;
+            Vector2 screenSize = new(gd.Viewport.Width, gd.Viewport.Height);
+            Main.spriteBatch.Draw(CloudTarget.GetTarget(), new Rectangle(0, 0, (int)screenSize.X, (int)screenSize.Y), Color.White);
         }
     }
 }

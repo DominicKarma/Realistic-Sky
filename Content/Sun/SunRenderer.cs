@@ -40,7 +40,7 @@ namespace RealisticSky.Content.Sun
             }
 
             // Draw the innermost, bright yellow bloom.
-            Main.spriteBatch.Draw(bloom, sunPosition, null, new Color(1f, 1f, 0.92f, 0f) * bloomOpacity, 0f, bloom.Size() * 0.5f, (MathF.Pow(scaleFactor, 1.5f) + pureWhiteInterpolant * 1.5f) * 0.9f, 0, 0f);
+            Main.spriteBatch.Draw(bloom, sunPosition, null, new Color(1f, 1f, 0.92f, 0f) * bloomOpacity * MathF.Pow(1f - Main.cloudAlpha, 3f), 0f, bloom.Size() * 0.5f, (MathF.Pow(scaleFactor, 1.5f) + pureWhiteInterpolant * 1.5f) * 0.9f, 0, 0f);
 
             // Make successive bloom draws weaker in accordance with the white interpolant.
             bloomOpacity *= MathHelper.Lerp(1f, 0.25f, pureWhiteInterpolant);

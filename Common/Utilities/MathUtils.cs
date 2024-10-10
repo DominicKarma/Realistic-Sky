@@ -1,4 +1,5 @@
-﻿using Terraria;
+﻿using System;
+using Terraria;
 
 namespace RealisticSky.Common.Utilities
 {
@@ -39,6 +40,15 @@ namespace RealisticSky.Common.Utilities
         public static float InverseLerpBump(float start1, float start2, float end1, float end2, float x)
         {
             return Utils.GetLerpValue(start1, start2, x, true) * Utils.GetLerpValue(end2, end1, x, true);
+        }
+
+        /// <summary>
+        /// Gives the <b>real</b> modulo of a divided by a divisor.
+        /// This method is necessary because the % operator in C# keeps the sign of the dividend.
+        /// </summary>
+        public static float Modulo(this float dividend, float divisor)
+        {
+            return dividend - (float)Math.Floor(dividend / divisor) * divisor;
         }
     }
 }
