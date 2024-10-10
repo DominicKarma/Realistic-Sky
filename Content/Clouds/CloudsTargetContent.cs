@@ -17,7 +17,7 @@ namespace RealisticSky.Content.Clouds
             device.Clear(Color.Transparent);
 
             // Draw the host's contents to the render target.
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
+            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearWrap, DepthStencilState.None, Main.Rasterizer, null, Matrix.Identity);
             CloudsRenderer.RenderToTarget();
             Main.spriteBatch.End();
 
